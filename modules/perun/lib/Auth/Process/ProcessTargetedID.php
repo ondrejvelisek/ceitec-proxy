@@ -39,8 +39,8 @@ class sspmod_perun_Auth_Process_ProcessTargetedID extends SimpleSAML_Auth_Proces
 		if (isset($request['Attributes'][$this->uidAttr][0])) {
 			$uid = $request['Attributes'][$this->uidAttr][0];
 		} else {
-			throw new SimpleSAML_Error_Exception("perun:ProcessTargetedID: 
-			missing mandatory attribute " . $this->uidAttr . " in request.");
+			throw new SimpleSAML_Error_Exception("perun:ProcessTargetedID: " .
+					"missing mandatory attribute " . $this->uidAttr . " in request.");
 		}
 
 		# Do not continue if we have user id with scope
@@ -53,8 +53,8 @@ class sspmod_perun_Auth_Process_ProcessTargetedID extends SimpleSAML_Auth_Proces
 		if (isset($request['Attributes']['schacHomeOrganization'][0])) {
 			$scope = $request['Attributes']['schacHomeOrganization'][0];
 		} else {
-			throw new SimpleSAML_Error_Exception("perun:ProcessTargetedID: 
-			missing mandatory attribute 'schacHomeOrganization' in request.");
+			throw new SimpleSAML_Error_Exception("perun:ProcessTargetedID: " .
+					"missing mandatory attribute 'schacHomeOrganization' in request.");
 		}
 
 		# Generate hash from uid (eduPersonTargetedID)
@@ -63,8 +63,8 @@ class sspmod_perun_Auth_Process_ProcessTargetedID extends SimpleSAML_Auth_Proces
 		# Construct new eppn
 		$newEduPersonPrincipalName = $this->prefix . '_' . $hash . '@' . $scope;
 
-		SimpleSAML_Logger::info("perun.ProcessTargetedID: Converting eduPersonTargetedID '" . $uid . "' 
-		to the new ID '" . $newEduPersonPrincipalName . "'");
+		SimpleSAML_Logger::info("perun.ProcessTargetedID: Converting eduPersonTargetedID '" . $uid . "' " .
+				"to the new ID '" . $newEduPersonPrincipalName . "'");
 
 		# Set attributes back to the response
 		# Set uid and also eduPersonPrincipalName, so all the modules and Perun will be happy

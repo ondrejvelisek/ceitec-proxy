@@ -12,8 +12,8 @@ $state = SimpleSAML_Auth_State::loadState($_REQUEST['stateId'], 'perun:UnknownId
 if (isset($state['Attributes'][$state['uidAttr']][0])) {
 	$uid = $state['Attributes'][$state['uidAttr']][0];
 } else {
-	throw new SimpleSAML_Error_Exception("perun:UnknownIdentity: 
-	missing mandatory attribute " . $state['uidAttr'] . " in request.");
+	throw new SimpleSAML_Error_Exception("perun:UnknownIdentity: " .
+			"missing mandatory attribute " . $state['uidAttr'] . " in request.");
 }
 
 if (isset($state['IdPMetadata']['entityid'])) {
@@ -21,8 +21,8 @@ if (isset($state['IdPMetadata']['entityid'])) {
 } else if (isset($state['Source']['entityid'])) {
 	$eppn = $state['Source']['entityid'];
 } else {
-	throw new SimpleSAML_Error_Exception("perun:UnknownIdentity: Cannot find entityID of hosted IDP. 
-			hint: Do you have this filter in IdP context?");
+	throw new SimpleSAML_Error_Exception("perun:UnknownIdentity: Cannot find entityID of hosted IDP. " .
+			"hint: Do you have this filter in IdP context?");
 }
 
 
@@ -33,8 +33,10 @@ try {
 		'extLogin' => $uid,
 	));
 
-	SimpleSAML_Logger::info('Identity ' . $uid . ' has been found in Perun. 
-	User name: ' . $user['firstName'].' '.$user['lastName'] . '. Continuing in process');
+	SimpleSAML_Logger::info('Identity ' . $uid . ' has been found in Perun. ' .
+			'User id: ' . $user['id'] . ', name: ' . $user['firstName'].' '.$user['lastName'] . '. Continuing in process');
+
+	$state['Attributes'][$state['perunUidAttr']] = array($user['id']);
 	SimpleSAML_Auth_ProcessingChain::resumeProcessing($state);
 
 } catch (sspmod_perun_Exception $e) {

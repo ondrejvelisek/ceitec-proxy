@@ -6,7 +6,8 @@
  * This module connects to Perun RPC and search for user by userExtSourceLogin. If the user does not exists in Perun
  * it redirects him to configurable url (redirect property).
  * It adds 'callback' query parameter where user can be redirected and try process again. e.g. user register himself.
- * If user exists nothing happens and control is passed to the next filter.
+ * If user exists it fills attribute defined by perunUidAttr with perun user id and control is passed to the next filter.
+ *
  *
  * It relies on perun rpc. Configure it properly.
  *
@@ -22,6 +23,7 @@ class sspmod_perun_Auth_Process_UnknownIdentity extends SimpleSAML_Auth_Processi
 {
 	private $uidAttr;
 	private $redirect;
+	private $perunUidAttr;
 
 
 	public function __construct($config, $reserved)
@@ -34,9 +36,13 @@ class sspmod_perun_Auth_Process_UnknownIdentity extends SimpleSAML_Auth_Processi
 		if (!isset($config['redirect'])) {
 			throw new SimpleSAML_Error_Exception("perun:UnknownIdentity: missing mandatory configuration option 'redirect'.");
 		}
+		if (!isset($config['perunUidAttr'])) {
+			throw new SimpleSAML_Error_Exception("perun:UnknownIdentity: missing mandatory configuration option 'perunUidAttr'.");
+		}
 
 		$this->uidAttr = (string) $config['uidAttr'];
 		$this->redirect = (string) $config['redirect'];
+		$this->perunUidAttr = (string) $config['perunUidAttr'];
 	}
 
 
@@ -46,6 +52,7 @@ class sspmod_perun_Auth_Process_UnknownIdentity extends SimpleSAML_Auth_Processi
 
 		$request['uidAttr']  = $this->uidAttr;
 		$request['redirect'] = $this->redirect;
+		$request['perunUidAttr'] = $this->perunUidAttr;
 		$stateId  = SimpleSAML_Auth_State::saveState($request, 'perun:UnknownIdentity');
 		$url = SimpleSAML_Module::getModuleURL('perun/unknown_identity_callback.php');
 		\SimpleSAML\Utils\HTTP::redirectTrustedURL($url, array('stateId' => $stateId));

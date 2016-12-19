@@ -32,6 +32,8 @@ class sspmod_perun_Rpc
 
 	public static function get($manager, $method, $params) {
 		$paramsQuery = http_build_query($params);
+		// replace 'paramList[0]=val0' to just 'paramList[]=val0' because perun rpc cannot consume such lists.
+		$paramsQuery = preg_replace('/\%5B\d+\%5D/', '%5B%5D', $paramsQuery);
 
 		$conf = SimpleSAML_Configuration::getConfig(self::CONFIG_FILE_NAME);
 		$rpc_url = $conf->getString(self::PROPNAME_URL);
