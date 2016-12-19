@@ -20,6 +20,7 @@
  * }
  * ```
  *
+ * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */
 class sspmod_perun_Rpc
 {
@@ -30,6 +31,7 @@ class sspmod_perun_Rpc
 
 
 	public static function get($manager, $method, $params) {
+		$paramsQuery = http_build_query($params);
 
 		$conf = SimpleSAML_Configuration::getConfig(self::CONFIG_FILE_NAME);
 		$rpc_url = $conf->getString(self::PROPNAME_URL);
@@ -39,17 +41,22 @@ class sspmod_perun_Rpc
 		$ch = curl_init();
 
 		$uri = $rpc_url .'json/'.  $manager .'/'. $method;
-		curl_setopt($ch, CURLOPT_URL, $uri .'?'. http_build_query($params));
+		curl_setopt($ch, CURLOPT_URL, $uri .'?'. $paramsQuery);
 		curl_setopt($ch, CURLOPT_USERPWD, $user . ":" . $pass);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		SimpleSAML_Logger::debug("perun.RPC: GET call $uri with params: " . $paramsQuery);
 
 		$json = curl_exec($ch);
 		curl_close($ch);
 
 		$result = json_decode($json, true);
 
+		if ($result == null) {
+			throw new SimpleSAML_Error_Exception("Cant't decode response from Perun. Call: $uri, Params: $paramsQuery, Response: $json");
+		}
 		if (isset($result['errorId'])) {
-			self::error($result['errorId'], $result['name'], $result['message'], $uri, http_build_query($params));
+			self::error($result['errorId'], $result['name'], $result['message'], $uri, $paramsQuery);
 		}
 
 		return $result;
@@ -78,11 +85,16 @@ class sspmod_perun_Rpc
 		);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
+		SimpleSAML_Logger::debug("perun.RPC: POST call $uri with params: " . $paramsJson);
+
 		$json = curl_exec($ch);
 		curl_close($ch);
 
 		$result = json_decode($json, true);
 
+		if ($result == null) {
+			throw new SimpleSAML_Error_Exception("Cant't decode response from Perun. Call: $uri, Params: $paramsJson, Response: $json");
+		}
 		if (isset($result['errorId'])) {
 			self::error($result['errorId'], $result['name'], $result['message'], $uri, $paramsJson);
 		}
@@ -92,7 +104,7 @@ class sspmod_perun_Rpc
 
 
 	private static function error($id, $name, $message, $uri, $params) {
-		throw new Perun_Exception($id, $name, $message . "\ncall: $uri, params: " . $params);
+		throw new sspmod_perun_Exception($id, $name, $message . "\ncall: $uri, params: " . $params);
 	}
 
 }

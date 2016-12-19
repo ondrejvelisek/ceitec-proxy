@@ -1,13 +1,17 @@
 <?php
 
 /**
+ * Wrapper of Perun exception returned from RPC.
  *
+ * It extends SimpleSAML_Error_Exception because user we want that user can report it.
+ *
+ * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */
-class Perun_Exception extends SimpleSAML_Error_Exception
+class sspmod_perun_Exception extends SimpleSAML_Error_Exception
 {
 	private $id;
 	private $name;
-	private $message;
+	// note that field $message is inherited
 
 	/**
 	 * Perun_Exception constructor.
@@ -39,17 +43,6 @@ class Perun_Exception extends SimpleSAML_Error_Exception
 	{
 		return $this->name;
 	}
-
-	/**
-	 * @return string
-	 */
-	public function getMessage()
-	{
-		return $this->message;
-	}
-
-
-
 
 
 }
