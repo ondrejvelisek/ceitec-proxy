@@ -37,7 +37,7 @@ $this->includeAtTemplateBase('includes/header.php');
 if ($spentry['entityid'] !== 'https://perun.elixir-czech.cz/shibboleth/raw-attributes-all-idps') {
 
 
-    if (!empty($faventry)) {
+	if (!empty($faventry)) {
 
 	echo '<p class="descriptionp">your previous selection</p>';
 	echo '<div class="metalist list-group">';
