@@ -17,9 +17,7 @@ if (isset($state['Attributes'][$state['uidAttr']][0])) {
 }
 
 if (isset($state['IdPMetadata']['entityid'])) {
-	$eppn = $state['IdPMetadata']['entityid'];
-} else if (isset($state['Source']['entityid'])) {
-	$eppn = $state['Source']['entityid'];
+	$entityId = $state['IdPMetadata']['entityid'];
 } else {
 	throw new SimpleSAML_Error_Exception("perun:UnknownIdentity: Cannot find entityID of hosted IDP. " .
 			"hint: Do you have this filter in IdP context?");
@@ -29,7 +27,7 @@ if (isset($state['IdPMetadata']['entityid'])) {
 try {
 
 	$user = sspmod_perun_Rpc::get('usersManager', 'getUserByExtSourceNameAndExtLogin', array(
-		'extSourceName' => $eppn,
+		'extSourceName' => $entityId,
 		'extLogin' => $uid,
 	));
 
