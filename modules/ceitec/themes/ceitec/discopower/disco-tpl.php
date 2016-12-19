@@ -211,7 +211,7 @@ function filterIdp($idpentry, $spentry, $whitelist, $greylist, $blacklist) {
 	if (in_array($idpentry['entityid'], $whitelist)) {
 		return true;
 	}	
-	return false;
+	return true;
 }
 
 
