@@ -8,7 +8,7 @@
  * For example of config file look at module_perun.php in perun (this) module directory.
  *
  * Example Usage:
- * ```php
+ *
  * try {
  *		$attribute = sspmod_perun_Rpc::get('attributesManager', 'getAttribute', array(
  *			'user' => $userId,
@@ -18,7 +18,7 @@
  * } catch (Perun_Exception $pe) {
  *		...
  * }
- * ```
+ *
  *
  * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */
