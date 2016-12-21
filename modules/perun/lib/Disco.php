@@ -14,11 +14,16 @@
  */
 class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 {
-
+	private $originalsp;
 
 	public function __construct(array $metadataSets, $instance)
 	{
 		parent::__construct($metadataSets, $instance);
+
+		parse_str(parse_url($this->returnURL)['query'], $query);
+		$id = explode(":", $query['AuthID'])[0];
+		$state = SimpleSAML_Auth_State::loadState($id, 'saml:sp:sso');
+		$this->originalsp = $state['SPMetadata'];
 	}
 
 
@@ -46,6 +51,7 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 		}
 
 		$t = new sspmod_perun_DiscoTemplate($this->config);
+		$t->data['originalsp'] = $this->originalsp;
 		$t->data['idplist'] = $this->idplistStructured($idpList);
 		$t->data['preferredidp'] = $preferredIdP;
 		$t->data['entityID'] = $this->spEntityId;
@@ -66,12 +72,24 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 	{
 		SimpleSAML_Logger::debug('perun.Disco.filterList: Idps loaded from metadata: ' . var_export(array_keys($list), true));
 
-		$list = parent::filterList($list);
+		if (!isset($this->originalsp['disco.doNotFilterIdps']) || !$this->originalsp['disco.doNotFilterIdps']) {
 
-		SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after basic filtration (e.g.) hide from discovery: ' . var_export(array_keys($list), true));
+			$list = parent::filterList($list);
+			$list = $this->scoping($list);
+			$list = $this->whitelisting($list);
+			$list = $this->greylisting($list);
+		}
+
+		if (empty($list)) {
+			throw new SimpleSAML_Error_Exception('All IdPs has been filtered out. And no one left.');
+		}
+
+		return $list;
+	}
 
 
-		// SAML2 Scoping
+	protected function scoping($list)
+	{
 		if (!empty($this->scopedIDPList)) {
 			foreach ($list as $entityId => $idp) {
 				if (!in_array($entityId, $this->scopedIDPList)) {
@@ -80,9 +98,12 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 			}
 		}
 		SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after SAML2 Scoping: ' . var_export(array_keys($list), true));
+		return $list;
+	}
 
 
-		// Whitelisting
+	protected function whitelisting($list)
+	{
 		$whitetable = $this->readTableFromFile('whitelist', array(0 => 'date', 1 => 'entityId'));
 		if ($whitetable !== null) {
 			$whitelist = isset($whitelist) ? $whitelist : array();
@@ -99,9 +120,12 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 			}
 		}
 		SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Whitelisting: ' . var_export(array_keys($list), true));
+		return $list;
+	}
 
 
-		// Greylisting
+	protected function greylisting($list)
+	{
 		$greytable = $this->readTableFromFile('greylist', array(0 => 'date', 1 => 'entityId'));
 		if ($greytable !== null) {
 			$greylist = isset($greylist) ? $greylist : array();
@@ -117,13 +141,6 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 			}
 		}
 		SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Greylisting: ' . var_export(array_keys($list), true));
-
-
-		if (empty($list)) {
-			throw new SimpleSAML_Error_Exception('All IdPs has been filtered out. And no one left.');
-		}
-
-
 		return $list;
 	}
 
