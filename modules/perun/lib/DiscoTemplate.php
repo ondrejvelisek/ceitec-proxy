@@ -82,13 +82,7 @@ class sspmod_perun_DiscoTemplate extends SimpleSAML_XHTML_Template
 	 * @return string url where user should be redirected when he choose idp
 	 */
 	public function getContinueUrl($idpEntityId) {
-		$url = '?' .
-			'entityID=' . urlencode($this->data['entityID']) . '&' .
-			'return=' . urlencode($this->data['return']) . '&' .
-			'returnIDParam=' . urlencode($this->data['returnIDParam']) . '&' .
-			'idpentityid=' . urlencode($idpEntityId);
-
-		return $url;
+		return sspmod_perun_Disco::buildContinueUrl($this->data['entityID'], $this->data['return'], $this->data['returnIDParam'], $idpEntityId);
 	}
 
 

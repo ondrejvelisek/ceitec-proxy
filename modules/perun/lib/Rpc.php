@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Class sspmod_elixir_Perun
- *
  * Provides interface to call Perun RPC.
  * Configuration file 'module_perun.php' should be placed in in default config folder of SimpleSAMLphp.
- * For example of config file look at module_perun.php in perun (this) module directory.
+ * For example of config-template file.
  *
  * Example Usage:
  *

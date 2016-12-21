@@ -1,0 +1,4 @@
+#date		entityId of whitelisted IdP
+2016-12-20	https://login.cz/idp-facebook/
+2016-12-20	https://login.cz/idp-google/
+2016-12-20	https://login.cz/devel-idp/
