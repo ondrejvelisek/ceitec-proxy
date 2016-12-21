@@ -1,7 +1,8 @@
 <?php
 
-$faventry = getFaventry($this->data['preferredidp'], $this->data['idplist']);
-
+/**
+ *
+ */
 
 if(!array_key_exists('header', $this->data)) {
 	$this->data['header'] = 'selectidp';
@@ -26,6 +27,8 @@ $greylist  = file(SimpleSAML_Module::getModuleDir('ceitec/greylist'), FILE_IGNOR
 $blacklist = file(SimpleSAML_Module::getModuleDir('ceitec/blacklist'), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 
+echo '<pre style="text-align: left;">' . var_export($this->data['idplist'], true) . '</pre>';
+
 
 if (!empty($faventry)) $this->data['autofocus'] = 'favouritesubmit';
 
@@ -39,51 +42,43 @@ if ($spentry['entityid'] !== 'https://perun.elixir-czech.cz/shibboleth/raw-attri
 
 	if (!empty($faventry)) {
 
-	echo '<p class="descriptionp">your previous selection</p>';
-	echo '<div class="metalist list-group">';
-	echo showEntry($this, $faventry, $spentry, true);
-	echo '</div>';
+		echo '<p class="descriptionp">your previous selection</p>';
+		echo '<div class="metalist list-group">';
+		echo showEntry($this, $faventry, $spentry, true);
+		echo '</div>';
 
 
-	echo getOr();
-    } 
-
-
-
-
-    foreach( $this->data['idplist'] AS $slist) {
-
-	if (empty($slist)) {
-		continue;
+		echo getOr();
 	}
 
+
+
+
+
 	// Have ORICD as the first one, so we reverse order
-	$slist_reverse = $slist;
+	$slist_reverse = $this->data['idplist']['social'];
 	arsort($slist_reverse);
 
 	echo '<div class="row">';
 	foreach ($slist_reverse AS $idpentry) {
-		if (array_key_exists('social', $idpentry) && $idpentry['social'] === TRUE) {
 
-			echo '<div class="col-md-4">';
-			echo '<div class="metalist list-group">';
-			echo showEntry($this, $idpentry, $spentry);
-			echo '</div>';
-			echo '</div>';
-		}
+		echo '<div class="col-md-4">';
+		echo '<div class="metalist list-group">';
+		echo showEntrySocial($this, $idpentry, $spentry, false);
+		echo '</div>';
+		echo '</div>';
+
 	}
 	echo '</div>';
 
-    }
 
-
-    echo getOr();
+	echo getOr();
 
 
 
-    echo '<p class="descriptionp">';
-    echo 'your institutional account';
-    echo '</p>';
+	echo '<p class="descriptionp">';
+	echo 'your institutional account';
+	echo '</p>';
 }
 
 echo '<div class="inlinesearch">';
@@ -93,31 +88,23 @@ echo '	<form id="idpselectform" action="?" method="get">
 		</form>';
 echo '</div>';
 
-foreach( $this->data['idplist'] AS $slist) {
 
-	if (empty($slist)) {
+echo '<div class="metalist list-group" id="list">';
+
+foreach ($this->data['idplist']['misc'] AS $idpentry) {
+	if (!filterIdp($idpentry, $spentry, $whitelist, $greylist, $blacklist)) {
 		continue;
 	}
-
-	echo '<div class="metalist list-group" id="list">';
-
-	foreach ($slist AS $idpentry) {
-		if (isset($idpentry['social'])) {
-			continue;
-		}
-		if (!filterIdp($idpentry, $spentry, $whitelist, $greylist, $blacklist)) {
-			continue;
-		}
-		echo (showEntry($this, $idpentry, $spentry));
-	}
-	echo '</div>';
+	echo (showEntry($this, $idpentry, $spentry));
 }
+echo '</div>';
+
 
 echo '<br>';
 echo '<br>';
 
 echo '<div class="no-idp-found alert alert-info">';
-	echo 'Can\'t find your institution? Contact us at <a href="mailto:idm@ics.muni.cz?subject=Request%20for%20adding%20new%20IdP">idm@ics.muni.cz</a>';
+echo 'Can\'t find your institution? Contact us at <a href="mailto:idm@ics.muni.cz?subject=Request%20for%20adding%20new%20IdP">idm@ics.muni.cz</a>';
 echo '</div>';
 
 ?>
@@ -185,17 +172,17 @@ function searchScript($faventry) {
 function filterIdp($idpentry, $spentry, $whitelist, $greylist, $blacklist) {
 	$whitelist = isset($whitelist) ? $whitelist : array();
 	$greylist  = isset($greylist)  ? $greylist  : array();
-	$blacklist = isset($blacklist) ? $blacklist : array();	
+	$blacklist = isset($blacklist) ? $blacklist : array();
 
 	if (in_array($idpentry['entityid'], $blacklist)) {
-                return false;
-        }
+		return false;
+	}
 	if (isset($spentry['disco.showAllIdps']) && $spentry['disco.showAllIdps']) {
 		return true;
 	}
 	if (in_array($idpentry['entityid'], $greylist)) {
-                return false;
-        }
+		return false;
+	}
 	if (isset($idpentry['EntityAttributes']['http://macedir.org/entity-category-support'])) {
 		$entityCategorySupport = $idpentry['EntityAttributes']['http://macedir.org/entity-category-support'];
 		if (in_array("http://refeds.org/category/research-and-scholarship", $entityCategorySupport)) {
@@ -206,21 +193,17 @@ function filterIdp($idpentry, $spentry, $whitelist, $greylist, $blacklist) {
 		}
 	}
 	if (isset($idpentry['CoCo']) && $idpentry['CoCo']) {
-		return true;	
+		return true;
 	}
 	if (in_array($idpentry['entityid'], $whitelist)) {
 		return true;
-	}	
+	}
 	return true;
 }
 
 
 
-function showEntry($t, $metadata, $spentry, $favourite = FALSE) {
-
-	if (!empty($metadata['social'])) {
-		return showEntrySocial($t, $metadata, $spentry, $favourite);
-	}
+function showEntry($t, $metadata, $spentry, $favourite = false) {
 
 	$extra = ($favourite ? ' favourite' : '');
 	$html = '<a class="metaentry' . $extra . ' list-group-item" href="' . continueUrl($t, $metadata['entityid'], $spentry) . '">';
@@ -234,8 +217,8 @@ function showEntry($t, $metadata, $spentry, $favourite = FALSE) {
 	return $html;
 }
 
-function showEntrySocial($t, $metadata, $spentry, $favourite) {
-	
+function showEntrySocial($t, $metadata, $spentry) {
+
 	$bck = 'white';
 	if (!empty($metadata['color'])) {
 		$bck = $metadata['color'];
@@ -252,16 +235,12 @@ function showEntrySocial($t, $metadata, $spentry, $favourite) {
 	return $html;
 }
 
-function continueUrl($t, $idpEntityId, $spentry) {
+function continueUrl($data, $idpEntityId) {
 	$url = '?' .
-                'entityID=' . urlencode($t->data['entityID']) . '&' .
-                'return=' . urlencode($t->data['return']) . '&' .
-                'returnIDParam=' . urlencode($t->data['returnIDParam']) . '&' .
-                'idpentityid=' . urlencode($idpEntityId);
-
-        if (isset($spentry['disco.showAllIdps']) && $spentry['disco.showAllIdps']) {
-                $url .= '&amp;doNotSaveIdP=true';
-        }
+		'entityID=' . urlencode($data['entityID']) . '&' .
+		'return=' . urlencode($data['return']) . '&' .
+		'returnIDParam=' . urlencode($data['returnIDParam']) . '&' .
+		'idpentityid=' . urlencode($idpEntityId);
 
 	return $url;
 }
@@ -269,13 +248,13 @@ function continueUrl($t, $idpEntityId, $spentry) {
 function showIcon($metadata) {
 	$html = '';
 	// Logos are turned off, because they are loaded via URL from IdP. Some IdPs have bad configuration, so it breaks the WAYF.
-	
+
 	/*if (isset($metadata['UIInfo']['Logo'][0]['url'])) {
 		$html .= '<img src="' . htmlspecialchars(\SimpleSAML\Utils\HTTP::resolveURL($metadata['UIInfo']['Logo'][0]['url'])) . '" class="idp-logo">';
 	} else if (isset($metadata['icon'])) {
 		$html .= '<img src="' . htmlspecialchars(\SimpleSAML\Utils\HTTP::resolveURL($metadata['icon'])) . '" class="idp-logo">';
 	}*/
-	
+
 	return $html;
 }
 

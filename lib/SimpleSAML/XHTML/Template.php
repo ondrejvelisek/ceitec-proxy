@@ -216,8 +216,7 @@ class SimpleSAML_XHTML_Template {
      * This function can be used to include headers and footers etc.
      *
      */    
-    private function includeAtTemplateBase($file) {
-        $data = $this->data;
+    protected function includeAtTemplateBase($file) {
 
         $filename = $this->findTemplatePath($file);
 
