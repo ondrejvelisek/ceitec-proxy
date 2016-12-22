@@ -4,7 +4,6 @@
  *
  * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */
-const CALLBACK_PARAMNAME = 'callback';
 
 $state = SimpleSAML_Auth_State::loadState($_REQUEST['stateId'], 'perun:UnknownIdentity');
 
@@ -44,7 +43,7 @@ try {
 		$callback = SimpleSAML_Module::getModuleURL('perun/unknown_identity_callback.php', array('stateId' => $stateId));
 
 		SimpleSAML_Logger::info('Unknown identity ' . $uid . '. Redirecting to ' . $state['redirect']);
-		\SimpleSAML\Utils\HTTP::redirectTrustedURL($state['redirect'], array(CALLBACK_PARAMNAME => $callback));
+		\SimpleSAML\Utils\HTTP::redirectTrustedURL($state['redirect'], array($state['callbackParamName'] => $callback));
 
 	} else {
 		throw $e;

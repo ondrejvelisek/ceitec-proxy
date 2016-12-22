@@ -24,6 +24,7 @@ class sspmod_perun_Auth_Process_UnknownIdentity extends SimpleSAML_Auth_Processi
 	private $uidAttr;
 	private $redirect;
 	private $perunUidAttr;
+	private $callbackParamName;
 
 
 	public function __construct($config, $reserved)
@@ -39,10 +40,14 @@ class sspmod_perun_Auth_Process_UnknownIdentity extends SimpleSAML_Auth_Processi
 		if (!isset($config['perunUidAttr'])) {
 			throw new SimpleSAML_Error_Exception("perun:UnknownIdentity: missing mandatory configuration option 'perunUidAttr'.");
 		}
+		if (!isset($config['callbackParamName'])) {
+			$config['callbackParamName'] = 'callbackUrl';
+		}
 
 		$this->uidAttr = (string) $config['uidAttr'];
 		$this->redirect = (string) $config['redirect'];
 		$this->perunUidAttr = (string) $config['perunUidAttr'];
+		$this->callbackParamName = (string) $config['callbackParamName'];
 	}
 
 
@@ -53,6 +58,7 @@ class sspmod_perun_Auth_Process_UnknownIdentity extends SimpleSAML_Auth_Processi
 		$request['uidAttr']  = $this->uidAttr;
 		$request['redirect'] = $this->redirect;
 		$request['perunUidAttr'] = $this->perunUidAttr;
+		$request['callbackParamName'] = $this->callbackParamName;
 		$stateId  = SimpleSAML_Auth_State::saveState($request, 'perun:UnknownIdentity');
 		$url = SimpleSAML_Module::getModuleURL('perun/unknown_identity_callback.php');
 		\SimpleSAML\Utils\HTTP::redirectTrustedURL($url, array('stateId' => $stateId));
