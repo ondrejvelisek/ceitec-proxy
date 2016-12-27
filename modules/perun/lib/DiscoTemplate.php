@@ -87,7 +87,7 @@ class sspmod_perun_DiscoTemplate extends SimpleSAML_XHTML_Template
 
 
 	/**
-	 * @param mixed $metadata
+	 * @param array $metadata
 	 * @return string translated name of idp or sp based on its metadata information
 	 */
 	public function getTranslatedEntityName($metadata) {
@@ -95,13 +95,13 @@ class sspmod_perun_DiscoTemplate extends SimpleSAML_XHTML_Template
 			$displayName = $metadata['UIInfo']['DisplayName'];
 			assert('is_array($displayName)'); // Should always be an array of language code -> translation
 			if (!empty($displayName)) {
-				return getTranslation($displayName);
+				return $this->getTranslation($displayName);
 			}
 		}
 
 		if (array_key_exists('name', $metadata)) {
 			if (is_array($metadata['name'])) {
-				return getTranslation($metadata['name']);
+				return $this->getTranslation($metadata['name']);
 			} else {
 				return $metadata['name'];
 			}
