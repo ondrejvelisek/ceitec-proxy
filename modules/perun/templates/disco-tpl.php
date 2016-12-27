@@ -1,9 +1,9 @@
 <?php
 
 /**
- * This is simple example of
+ * This is simple example of template for perun Discovery service
  *
- * To allow type hinting in IDE
+ * Allow type hinting in IDE
  * @var sspmod_perun_DiscoTemplate $this
  */
 

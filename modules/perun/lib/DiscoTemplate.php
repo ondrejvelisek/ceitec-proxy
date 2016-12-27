@@ -3,7 +3,7 @@
 
 /**
  * This class extends basic SimpleSAML template class. It provides some utils functions used in templates
- * specific for Discovery services.
+ * specific for Discovery services so template do not have to access directly $this->data field.
  *
  * Here should NOT be defined any view specific methods.
  *

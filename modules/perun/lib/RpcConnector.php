@@ -2,8 +2,10 @@
 
 /**
  * Provides interface to call Perun RPC.
- * Configuration file 'module_perun.php' should be placed in in default config folder of SimpleSAMLphp.
- * For example of config-template file.
+ * Configuration file 'module_perun.php' should be placed in default config folder of SimpleSAMLphp.
+ * Example of file is in config-template folder.
+ * Note that Perun RPC should be considered as unreliable
+ * and authentication process should continue without connection to Perun. e.g. use LDAP instead.
  *
  * Example Usage:
  *
@@ -17,10 +19,9 @@
  *		...
  * }
  *
- *
  * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */
-class sspmod_perun_Rpc
+class sspmod_perun_RpcConnector
 {
 	const CONFIG_FILE_NAME = 'module_perun.php';
 	const PROPNAME_URL  = 'rpc_url';
@@ -28,7 +29,7 @@ class sspmod_perun_Rpc
 	const PROPNAME_PASS = 'password';
 
 
-	public static function get($manager, $method, $params) {
+	public static function get($manager, $method, $params = array()) {
 		$paramsQuery = http_build_query($params);
 		// replace 'paramList[0]=val0' to just 'paramList[]=val0' because perun rpc cannot consume such lists.
 		$paramsQuery = preg_replace('/\%5B\d+\%5D/', '%5B%5D', $paramsQuery);
@@ -45,14 +46,14 @@ class sspmod_perun_Rpc
 		curl_setopt($ch, CURLOPT_USERPWD, $user . ":" . $pass);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		SimpleSAML_Logger::debug("perun.RPC: GET call $uri with params: " . $paramsQuery);
-
 		$json = curl_exec($ch);
 		curl_close($ch);
 
+		SimpleSAML_Logger::debug("perun.RPC: GET call $uri with params: " . $paramsQuery . ", response: " . $json);
+
 		$result = json_decode($json, true);
 
-		if ($result == null) {
+		if (is_null($result)) {
 			throw new SimpleSAML_Error_Exception("Cant't decode response from Perun. Call: $uri, Params: $paramsQuery, Response: $json");
 		}
 		if (isset($result['errorId'])) {
@@ -63,7 +64,7 @@ class sspmod_perun_Rpc
 	}
 
 
-	public static function post($manager, $method, $params) {
+	public static function post($manager, $method, $params = array()) {
 		$paramsJson = json_encode($params);
 
 		$conf = SimpleSAML_Configuration::getConfig(self::CONFIG_FILE_NAME);
@@ -85,14 +86,14 @@ class sspmod_perun_Rpc
 		);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		SimpleSAML_Logger::debug("perun.RPC: POST call $uri with params: " . $paramsJson);
-
 		$json = curl_exec($ch);
 		curl_close($ch);
 
+		SimpleSAML_Logger::debug("perun.RPC: POST call $uri with params: " . $paramsJson . ", response: " . $json);
+
 		$result = json_decode($json, true);
 
-		if ($result == null) {
+		if (is_null($result)) {
 			throw new SimpleSAML_Error_Exception("Cant't decode response from Perun. Call: $uri, Params: $paramsJson, Response: $json");
 		}
 		if (isset($result['errorId'])) {
@@ -104,7 +105,7 @@ class sspmod_perun_Rpc
 
 
 	private static function error($id, $name, $message, $uri, $params) {
-		throw new sspmod_perun_Exception($id, $name, $message . "\ncall: $uri, params: " . $params);
+		throw new sspmod_perun_Exception($id, $name, $message . "\ncall: $uri, params: " . var_export($params, true));
 	}
 
 }
