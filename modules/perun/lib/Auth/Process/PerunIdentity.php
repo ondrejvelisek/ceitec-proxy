@@ -19,9 +19,12 @@
  */
 class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_ProcessingFilter
 {
+	const CONFIG_FILE_NAME = 'module_perun.php';
+	const VO_SHORTNAME_PROPNAME = 'vo';
+
 	private $uidAttr;
 	private $redirect;
-	private $vo;
+	private $voShortName;
 	private $callbackParamName;
 	private $interface;
 
@@ -41,9 +44,6 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 		if (!isset($config['redirect'])) {
 			throw new SimpleSAML_Error_Exception("perun:PerunIdentity: missing mandatory configuration option 'redirect'.");
 		}
-		if (!isset($config['vo'])) {
-			throw new SimpleSAML_Error_Exception("perun:PerunIdentity: missing mandatory configuration option 'vo'.");
-		}
 		if (!isset($config['callbackParamName'])) {
 			$config['callbackParamName'] = 'targetnew';
 		}
@@ -51,9 +51,11 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 			$config['interface'] = sspmod_perun_Adapter::RPC;
 		}
 
+		$perunConfig = SimpleSAML_Configuration::getConfig(self::CONFIG_FILE_NAME);
+
 		$this->uidAttr = (string) $config['uidAttr'];
 		$this->redirect = (string) $config['redirect'];
-		$this->vo = (string) $config['vo'];
+		$this->voShortName = $perunConfig->getString(self::VO_SHORTNAME_PROPNAME);;
 		$this->callbackParamName = (string) $config['callbackParamName'];
 		$this->interface = (string) $config['interface'];
 		$this->adapter = sspmod_perun_Adapter::getInstance($this->interface);
@@ -86,7 +88,7 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 		}
 
 
-		$spGroups = $this->adapter->getSpGroups($spEntityId, $this->vo);
+		$spGroups = $this->adapter->getSpGroups($spEntityId, $this->voShortName);
 
 		if (empty($spGroups)) {
 			throw new SimpleSAML_Error_Exception('No Perun groups are assigned with SP entityID '.$spEntityId.'. ' .
@@ -100,11 +102,11 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 
 		if ($perunUser === null) {
 			SimpleSAML_Logger::info('Perun user with identity: '.$uid.' has NOT been found. He is being redirected to register.');
-			$this->register($request, $this->redirect, $this->callbackParamName, $this->vo, $spGroups, $this->interface);
+			$this->register($request, $this->redirect, $this->callbackParamName, $this->voShortName, $spGroups, $this->interface);
 		}
 
 
-		$memberGroups = $this->adapter->getMemberGroups($perunUser['id'], $this->vo);
+		$memberGroups = $this->adapter->getMemberGroups($perunUser['id'], $this->voShortName);
 
 		SimpleSAML_Logger::info('member groups: '.var_export($memberGroups, true));
 		SimpleSAML_Logger::info('sp groups: '.var_export($spGroups, true));
@@ -114,7 +116,7 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 		if (empty($groups)) {
 			SimpleSAML_Logger::info('Perun user with identity: '.$uid.' has been found but SP do NOT have sufficient rights to get information about him. '.
 				'User has to register to specific VO or Group. He is being redirected to register. ');
-			$this->register($request, $this->redirect, $this->callbackParamName, $this->vo, $spGroups, $this->interface);
+			$this->register($request, $this->redirect, $this->callbackParamName, $this->voShortName, $spGroups, $this->interface);
 		}
 
 		SimpleSAML_Logger::info('Perun user with identity: '.$uid.' has been found and SP has sufficient rights to get info about him. '.
@@ -145,7 +147,6 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 
 		$request['interface'] = $this->interface;
 		$request['uidAttr'] = $this->uidAttr;
-		$request['vo'] = $this->vo;
 		$request['redirect'] = $this->redirect;
 		$request['callbackParamName'] = $this->callbackParamName;
 

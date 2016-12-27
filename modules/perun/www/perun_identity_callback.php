@@ -9,7 +9,6 @@ $state = SimpleSAML_Auth_State::loadState($_REQUEST['stateId'], 'perun:PerunIden
 
 $config = array(
 	'uidAttr' => $state['uidAttr'],
-	'vo' => $state['vo'],
 	'redirect' => $state['redirect'],
 	'callbackParamName' => $state['callbackParamName'],
 	'interface' => $state['interface'],
