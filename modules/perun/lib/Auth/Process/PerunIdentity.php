@@ -73,11 +73,12 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 				"missing mandatory attribute " . $this->uidAttr . " in request.");
 		}
 
-		if (isset($request['IdPMetadata']['entityid'])) {
-			$idpEntityId = $request['IdPMetadata']['entityid'];
+		# Get entityID of source IdP not the entityID of the proxy
+		if (isset($request['Attributes']['sourceIdPEntityID'][0])) {
+			$idpEntityId = $request['Attributes']['sourceIdPEntityID'][0];
 		} else {
-			throw new SimpleSAML_Error_Exception("perun:PerunIdentity: Cannot find entityID of hosted IDP. " .
-				"hint: Do you have this filter in IdP context?");
+			throw new SimpleSAML_Error_Exception("perun:PerunIdentity: Cannot find entityID of external IDP. " .
+				"hint: Do you have RetainIdpEntityID filter in SP context?");
 		}
 
 		if (isset($request['SPMetadata']['entityid'])) {
@@ -86,6 +87,16 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 			throw new SimpleSAML_Error_Exception("perun:PerunIdentity: Cannot find entityID of remote SP. " .
 				"hint: Do you have this filter in IdP context?");
 		}
+
+		# SP can have its own redirect URL
+		if (isset($request['SPMetadata']['redirectURL']) && !empty($request['SPMetadata']['redirectURL'])) {
+                        $this->redirect = $request['SPMetadata']['redirectURL'];
+                }
+
+		# SP can have its own associated voShortName
+		if (isset($request['SPMetadata']['voShortName']) && !empty($request['SPMetadata']['voShortName'])) {
+                        $this->voShortName = $request['SPMetadata']['voShortName'];
+                }
 
 
 		$spGroups = $this->adapter->getSpGroups($spEntityId, $this->voShortName);
@@ -96,7 +107,6 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 				'Hint2: assign groups to resource of the facility in Perun. '
 			);
 		}
-
 
 		$perunUser = $this->adapter->getPerunUser($idpEntityId, $uid);
 

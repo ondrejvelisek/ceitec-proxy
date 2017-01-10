@@ -18,7 +18,7 @@ class sspmod_perun_AdapterRpc extends sspmod_perun_Adapter
 			));
 			return $user;
 		} catch (sspmod_perun_Exception $e) {
-			if ($e->getName() === 'UserExtSourceNotExistsException') {
+			if ($e->getName() === 'UserExtSourceNotExistsException' || $e->getName() === 'ExtSourceNotExistsException') {
 				return null;
 			} else {
 				throw $e;
