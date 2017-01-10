@@ -10,10 +10,10 @@
  * Also it adds 'vo' and 'group' query parameter to let registrar know where user should be registered.
  *
  * If user exists it fills 'perun' to request structure containing 'userId' and 'groups' fields.
- * User is not allowed to pass this filter until he registers and 'perun' structure is filled properly.
+ * User is not allowed to pass this filter until he registers and is in proper group and 'perun' structure is filled properly.
  *
- * It is supposed to be used in IdP context because it needs to know entityId of this idp from request.
- * Means it should be placed in idp-hosted metadata.
+ * It is supposed to be used in IdP context because it needs to know entityId of destination SP from request.
+ * Means it should be placed e.g. in idp-hosted metadata.
  *
  * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */
@@ -27,6 +27,7 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 	private $voShortName;
 	private $callbackParamName;
 	private $interface;
+	private $sourceIdPEntityIDAttr;
 
 	/**
 	 * @var sspmod_perun_Adapter
@@ -50,6 +51,9 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 		if (!isset($config['interface'])) {
 			$config['interface'] = sspmod_perun_Adapter::RPC;
 		}
+		if (!isset($config['sourceIdPEntityIDAttr'])) {
+			$config['sourceIdPEntityIDAttr'] = sspmod_perun_Auth_Process_RetainIdPEntityID::DEFAULT_ATTR_NAME;
+		}
 
 		$perunConfig = SimpleSAML_Configuration::getConfig(self::CONFIG_FILE_NAME);
 
@@ -58,6 +62,7 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 		$this->voShortName = $perunConfig->getString(self::VO_SHORTNAME_PROPNAME);;
 		$this->callbackParamName = (string) $config['callbackParamName'];
 		$this->interface = (string) $config['interface'];
+		$this->sourceIdPEntityIDAttr = $config['sourceIdPEntityIDAttr'];
 		$this->adapter = sspmod_perun_Adapter::getInstance($this->interface);
 	}
 
@@ -73,11 +78,11 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 				"missing mandatory attribute " . $this->uidAttr . " in request.");
 		}
 
-		if (isset($request['IdPMetadata']['entityid'])) {
-			$idpEntityId = $request['IdPMetadata']['entityid'];
+		if (isset($request['Attributes'][$this->sourceIdPEntityIDAttr][0])) {
+			$idpEntityId = $request['Attributes'][$this->sourceIdPEntityIDAttr][0];
 		} else {
-			throw new SimpleSAML_Error_Exception("perun:PerunIdentity: Cannot find entityID of hosted IDP. " .
-				"hint: Do you have this filter in IdP context?");
+			throw new SimpleSAML_Error_Exception("perun:PerunIdentity: Cannot find entityID of source IDP. " .
+				"hint: Did you properly configured RetainIdPEntityID filter in SP context?");
 		}
 
 		if (isset($request['SPMetadata']['entityid'])) {
