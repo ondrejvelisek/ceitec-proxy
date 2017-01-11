@@ -5,6 +5,7 @@
  *
  * Filter extract entityID of source remote (source/original) IdP to attribute defined by 'attrName' config property.
  * It supposed to be used in proxy SP context. Means it should be defined in authsources or idp-remote files.
+ * But it can be placed also in IdP context. In such case it extracts this hosted IdP entityID.
  *
  * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */

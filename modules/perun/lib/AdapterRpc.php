@@ -20,6 +20,9 @@ class sspmod_perun_AdapterRpc extends sspmod_perun_Adapter
 		} catch (sspmod_perun_Exception $e) {
 			if ($e->getName() === 'UserExtSourceNotExistsException') {
 				return null;
+			} else if ($e->getName() === 'ExtSourceNotExistsException') {
+				// Because use of original/source entityID as extSourceName
+				return null;
 			} else {
 				throw $e;
 			}

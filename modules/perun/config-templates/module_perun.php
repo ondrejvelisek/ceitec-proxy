@@ -15,12 +15,6 @@ $config = array(
 	'rpc_url' => 'https://perun.inside.cz/krb/rpc/',
 
 	/**
-	 * shortName of virtual organization in Perun this ProxyIdP is working with.
-	 * note: Proxy IdP can work with only one VO.
-	 */
-	'vo' => 'voTest',
-
-	/**
 	 * username if rpc url is protected with basic auth.
 	 */
 	'username' => '_proxy-idp',
