@@ -24,8 +24,8 @@ body {
 
 
 #wrap {
-        margin: 2em auto;
-        max-width: 720px;
+	margin: 2em auto;
+	max-width: 720px;
 }
 #content {
 	margin-top: 0px;
@@ -46,14 +46,14 @@ body {
 	color: #337ab7;
 }
 .ui-widget-header .ui-state-default:hover {
-        background: #eee;
-        color: #23527c;
+	background: #eee;
+	color: #23527c;
 }
 .ui-widget-header .ui-state-active {
-        border: 1px solid #ddd;
+	border: 1px solid #ddd;
 }
 .ui-widget-header .ui-state-active:hover {
-        background: #fff;
+	background: #fff;
 }
 
 

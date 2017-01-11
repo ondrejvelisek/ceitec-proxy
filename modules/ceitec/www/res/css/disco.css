@@ -13,40 +13,40 @@ a.social {
 }
 a.social:hover,
 a.social:focus {
-        color: white;
+	color: white;
 	background: rgba(0,0,0,0.2);
-        border: 1px solid rgba(0,0,0,0.3);
+	border: 1px solid rgba(0,0,0,0.3);
 	box-shadow: 0px 0px 10px 30px rgba(0,0,0,0.1) inset;
 }
 a.social img {
-        display: inline-block;
+	display: inline-block;
 	height: 40px;
 	max-height: 40px;
 	width: 40px;
 	max-width: 40px;
 	padding: 6px;
 	margin: -12px 10px -10px -10px;
-        border-right: 1px solid rgba(0,0,0,0.2);
+	border-right: 1px solid rgba(0,0,0,0.2);
 }
 a.social:hover img {
-        border-right: 1px solid rgba(0,0,0,0.3);
+	border-right: 1px solid rgba(0,0,0,0.3);
 }
 
 
-a.metaentry.favourite, 
+a.metaentry.favourite,
 a.metaentry:hover {
-        background-position: 10px center;
+	background-position: 10px center;
 }
 
 a.metaentry .idp-logo {
-        float: right;
-        height: 20px;
-        max-width: 120px;
+	float: right;
+	height: 20px;
+	max-width: 120px;
 }
 
 a.metaentryrow .idp-logo {
-        max-height: 40px;
-        max-width: 200px;
+	max-height: 40px;
+	max-width: 200px;
 	padding: 3px;
 }
 
@@ -57,17 +57,17 @@ a.metaentryrow .idp-logo {
 }
 
 #misc .container-fluid .col-xs-12:last-child img {
-    max-height: 42px;
-    margin-top: -1px;
+	max-height: 42px;
+	margin-top: -1px;
 }
 
 @media screen and (max-width: 950px) {
-    a.metaentryrow .idp-logo {
-        margin-bottom: 10px;
-    }
-    #misc .container-fluid .col-xs-12:last-child img {
-        width: 193px;
-    }
+	a.metaentryrow .idp-logo {
+		margin-bottom: 10px;
+	}
+	#misc .container-fluid .col-xs-12:last-child img {
+		width: 193px;
+	}
 }
 
 .inlinesearch {
@@ -79,28 +79,28 @@ form#idpselectform input {
 	width: 100%;
 	background-position: 10px center;
 	padding: 10px 15px 10px 35px;
-        height: 46px;
+	height: 46px;
 }
 
 
 .search-box {
-    margin-bottom: 16px;
+	margin-bottom: 16px;
 }
 .idp-list {
-    margin-bottom: 16px;
+	margin-bottom: 16px;
 }
 .metarowtable {
 	margin-left: auto;
-        margin-right: auto;
+	margin-right: auto;
 	width: 500px;;
 	border: 0px;
 	text-align: center;
 }
 
 .metarowtable td img{
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
 }
 .descriptionp {
 	text-align: center;
@@ -116,7 +116,7 @@ form#idpselectform input {
 	margin-bottom: 30px;
 }
 .hrline	span {
-	background-color: #ffffff; 
+	background-color: #ffffff;
 	padding: 0 20px;
 }
 
