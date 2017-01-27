@@ -78,6 +78,14 @@ class sspmod_perun_DiscoTemplate extends SimpleSAML_XHTML_Template
 
 
 	/**
+	 * @return bool true if SP has property 'disco.doNotFilterIdps' set to true in its metadata. False otherwise.
+	 */
+	public function isOriginalSpNonFilteringIdPs() {
+		return (isset($this->data['originalsp']['disco.doNotFilterIdps']) && $this->data['originalsp']['disco.doNotFilterIdps'] === TRUE);
+	}
+
+
+	/**
 	 * @param string $idpEntityId
 	 * @return string url where user should be redirected when he choose idp
 	 */

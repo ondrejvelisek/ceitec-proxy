@@ -1,0 +1,16 @@
+
+.btn:hover {
+	background-image: none;
+}
+
+table.attributes {
+	border: inherit;
+}
+table.attributes tr td {
+	border-bottom: inherit;
+}
+table#table_with_attributes .attrvalue {
+	padding-left: 2em;
+	margin: 0.2em 0 0.1em 0;
+}
+
