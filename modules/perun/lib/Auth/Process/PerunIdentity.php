@@ -109,26 +109,29 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 			$this->voShortName = $request['SPMetadata'][self::VO_SHORTNAME];
 		}
 
+		$vo = $this->adapter->getVoByShortName($this->voShortName);
 
-		$spGroups = $this->adapter->getSpGroups($spEntityId, $this->voShortName);
+		$spGroups = $this->adapter->getSpGroups($spEntityId, $vo);
 
 		if (empty($spGroups)) {
-			throw new SimpleSAML_Error_Exception('No Perun groups are assigned with SP entityID '.$spEntityId.'. ' .
+			throw new SimpleSAML_Error_Exception(
+				'No Perun groups in VO '.$vo->getName().'are assigned with SP entityID '.$spEntityId.'. ' .
 				'Hint1: create facility in Perun with attribute entityID of your SP. ' .
-				'Hint2: assign groups to resource of the facility in Perun. '
+				'Hint2: assign groups in VO '.$vo->getName().' to resource of the facility in Perun. '
 			);
 		}
 
+		SimpleSAML_Logger::debug("SP GROUPs - ".var_export($spGroups, true));
 
-		$perunUser = $this->adapter->getPerunUser($idpEntityId, $uid);
+		$user = $this->adapter->getPerunUser($idpEntityId, $uid);
 
-		if ($perunUser === null) {
+		if ($user === null) {
 			SimpleSAML_Logger::info('Perun user with identity: '.$uid.' has NOT been found. He is being redirected to register.');
-			$this->register($request, $this->registerUrl, $this->callbackParamName, $this->voShortName, $spGroups, $this->interface);
+			$this->register($request, $this->registerUrl, $this->callbackParamName, $vo, $spGroups, $this->interface);
 		}
 
 
-		$memberGroups = $this->adapter->getMemberGroups($perunUser['id'], $this->voShortName);
+		$memberGroups = $this->adapter->getMemberGroups($user, $vo);
 
 		SimpleSAML_Logger::info('member groups: '.var_export($memberGroups, true));
 		SimpleSAML_Logger::info('sp groups: '.var_export($spGroups, true));
@@ -136,36 +139,36 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 		$groups = $this->intersectById($spGroups, $memberGroups);
 
 		if (empty($groups)) {
-			SimpleSAML_Logger::info('Perun user with identity: '.$uid.' has been found but SP do NOT have sufficient rights to get information about him. '.
+			SimpleSAML_Logger::info('Perun user with identity: '.$uid.' has been found but SP does NOT have sufficient rights to get information about him. '.
 				'User has to register to specific VO or Group. He is being redirected to register. ');
-			$this->register($request, $this->registerUrl, $this->callbackParamName, $this->voShortName, $spGroups, $this->interface);
+			$this->register($request, $this->registerUrl, $this->callbackParamName, $vo, $spGroups, $this->interface);
 		}
 
 		SimpleSAML_Logger::info('Perun user with identity: '.$uid.' has been found and SP has sufficient rights to get info about him. '.
-				'UserId '.$perunUser['id'].' is being set to request');
+				'User '.$user->getName().' with id: '.$user->getId().' is being set to request');
 
 		if (!isset($request['perun'])) {
 			$request['perun'] = array();
 		}
 
-		$request['perun']['userId'] = $perunUser['id'];
+		$request['perun']['user'] = $user;
 		$request['perun']['groups'] = $groups;
 
 	}
 
 
 	/**
-	 * Redirects user to register (or consolidate unkwnown identity) on external page (e.g. registrar).
+	 * Redirects user to register (or consolidate unknown identity) on external page (e.g. registrar).
 	 * If has more options to which group he can register offers him a list before redirection.
 	 *
 	 * @param string $request
 	 * @param string $registerUrl url to external page where user can register
-	 * @param string $callbackParamName name of query parameter where whould be stored url where external page can send user back to try authenticates again
-	 * @param string $voShortName
-	 * @param array $groups
+	 * @param string $callbackParamName name of query parameter where would be stored url where external page can send user back to try authenticates again
+	 * @param sspmod_perun_model_Vo $vo
+	 * @param sspmod_perun_model_Group[] $groups
 	 * @param string $interface which interface should be used for connecting to Perun
 	 */
-	protected function register($request, $registerUrl, $callbackParamName, $voShortName, $groups, $interface) {
+	protected function register($request, $registerUrl, $callbackParamName, $vo, $groups, $interface) {
 
 		$request['config'] = array(
 			self::UID_ATTR => $this->uidAttr,
@@ -179,24 +182,30 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 		$stateId  = SimpleSAML_Auth_State::saveState($request, 'perun:PerunIdentity');
 		$callback = SimpleSAML_Module::getModuleURL('perun/perun_identity_callback.php', array('stateId' => $stateId));
 
-		if ($this->containsProperty($groups, 'name', 'members')) {
-			$this->registerDirectly($registerUrl, $callbackParamName, $callback, $voShortName);
+		if ($this->containsGroupWithName($groups, 'members')) {
+			$this->registerDirectly($registerUrl, $callbackParamName, $callback, $vo);
 		}
 		if (sizeof($groups) === 1) {
-			$this->registerDirectly($registerUrl, $callbackParamName, $callback, $voShortName, $groups[0]);
+			$this->registerDirectly($registerUrl, $callbackParamName, $callback, $vo, $groups[0]);
 		} else {
-			$this->registerChooseGroup($registerUrl, $callbackParamName, $callback, $voShortName, $groups, $interface);
+			$this->registerChooseGroup($registerUrl, $callbackParamName, $callback, $vo, $groups, $interface);
 		}
 
 	}
 
-
-	protected function registerDirectly($registerUrl, $callbackParamName, $callback, $voShortName, $group = null) {
+	/**
+	 * @param string $registerUrl
+	 * @param string $callbackParamName
+	 * @param string $callback
+	 * @param sspmod_perun_model_Vo $vo
+	 * @param sspmod_perun_model_Group|null $group
+	 */
+	protected function registerDirectly($registerUrl, $callbackParamName, $callback, $vo, $group = null) {
 
 		$params = array();
-		$params['vo'] = $voShortName;
+		$params['vo'] = $vo->getShortName();
 		if (!is_null($group)) {
-			$params['group'] = $group['name'];
+			$params['group'] = $group->getName();
 		}
 		$params[$callbackParamName] = $callback;
 
@@ -204,20 +213,27 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 
 	}
 
-
-	protected function registerChooseGroup($registerUrl, $callbackParamName, $callback, $voShortName, $groups, $interface) {
+	/**
+	 * @param string $registerUrl
+	 * @param string $callbackParamName
+	 * @param string $callback
+	 * @param sspmod_perun_model_Vo $vo
+	 * @param sspmod_perun_model_Group[] $groups
+	 * @param string $interface
+	 */
+	protected function registerChooseGroup($registerUrl, $callbackParamName, $callback, $vo, $groups, $interface) {
 
 		$chooseGroupUrl = SimpleSAML_Module::getModuleURL('perun/perun_identity_choose_group.php');
 
 		$groupNames = array();
 		foreach ($groups as $group) {
-			array_push($groupNames, $group['name']);
+			array_push($groupNames, $group->getName());
 		}
 
 		\SimpleSAML\Utils\HTTP::redirectTrustedURL($chooseGroupUrl, array(
 			self::REGISTER_URL => $registerUrl,
 			self::CALLBACK_PARAM_NAME => $callbackParamName,
-			self::VO_SHORTNAME => $voShortName,
+			self::VO_SHORTNAME => $vo->getShortName(),
 			self::INTERFACE_PROPNAME => $interface,
 			'groupNames' => $groupNames,
 			'callbackUrl' => $callback,
@@ -226,22 +242,48 @@ class sspmod_perun_Auth_Process_PerunIdentity extends SimpleSAML_Auth_Processing
 	}
 
 
+
+
+	/**
+	 * @param sspmod_perun_model_HasId[] $spGroups
+	 * @param sspmod_perun_model_HasId[] $memberGroups
+	 * @return sspmod_perun_model_HasId[]
+	 */
 	private function intersectById($spGroups, $memberGroups)
 	{
 		$intersection = array();
 		foreach ($spGroups as $spGroup) {
-			if ($this->containsProperty($memberGroups, 'id', $spGroup['id'])) {
+			if ($this->containsId($memberGroups, $spGroup->getId())) {
 				array_push($intersection, $spGroup);
 			}
 		}
 		return $intersection;
 	}
 
-
-	private function containsProperty($entities, $name, $value)
+	/**
+	 * @param sspmod_perun_model_HasId[] $entities
+	 * @param int $value
+	 * @return bool
+	 */
+	private function containsId($entities, $value)
 	{
 		foreach ($entities as $entity) {
-			if ($entity[$name] === $value) {
+			if ($entity->getId() === $value) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param sspmod_perun_model_Group[] $entities
+	 * @param string $name
+	 * @return bool
+	 */
+	private function containsGroupWithName($entities, $name)
+	{
+		foreach ($entities as $entity) {
+			if ($entity->getName() === $name) {
 				return true;
 			}
 		}

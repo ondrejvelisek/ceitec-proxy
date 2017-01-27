@@ -12,16 +12,23 @@ $config = array(
 	/**
 	 * base url to rpc with slash at the end.
 	 */
-	'rpc_url' => 'https://perun.inside.cz/krb/rpc/',
+	'rpc.url' => 'https://perun.inside.cz/krb/rpc/',
 
 	/**
-	 * username if rpc url is protected with basic auth.
+	 * rpc credentials if rpc url is protected with basic auth.
 	 */
-	'username' => '_proxy-idp',
+	'rpc.username' => '_proxy-idp',
+	'rpc.password' => 'S-Perunem-na-vecne-casy-a-nikdy-jinak!',
 
 	/**
-	 * password if rpc url is protected with basic auth.
+	 * hostname of perun ldap with ldap(s):// at the beginning.
 	 */
-	'password' => 'S-Perunem-na-vecne-casy-a-nikdy-jinak!'
+	'ldap.hostname' => 'ldaps://perun.inside.cz',
+
+	/**
+	 * ldap credentials if ldap search is protected. If it is null or not set at all. No user is used for bind.
+	 */
+	//'ldap.username' => '_proxy-idp',
+	//'ldap.password' => 'S-Perunem-na-vecne-casy-a-nikdy-jinak!'
 
 );

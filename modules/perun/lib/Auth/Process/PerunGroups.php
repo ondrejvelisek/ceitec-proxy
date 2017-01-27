@@ -29,6 +29,9 @@ class sspmod_perun_Auth_Process_PerunGroups extends SimpleSAML_Auth_ProcessingFi
 	public function process(&$request)
 	{
 		if (isset($request['perun']['groups'])) {
+			/** allow IDE hint whisperer
+			 * @var sspmod_perun_model_Group[] $groups
+			 */
 			$groups = $request['perun']['groups'];
 		} else {
 			throw new SimpleSAML_Error_Exception("perun:PerunGroups: " .
@@ -39,7 +42,7 @@ class sspmod_perun_Auth_Process_PerunGroups extends SimpleSAML_Auth_ProcessingFi
 
 		$request['Attributes'][$this->attrName] = array();
 		foreach ($groups as $group) {
-			array_push($request['Attributes'][$this->attrName], $group['name']);
+			array_push($request['Attributes'][$this->attrName], $group->getName());
 		}
 	}
 

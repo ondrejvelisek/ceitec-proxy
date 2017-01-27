@@ -5,7 +5,11 @@
  *
  * Allow type hinting in IDE
  * @var SimpleSAML_XHTML_Template $this
+ * @var sspmod_perun_model_Group[] $groups;
+ * @var sspmod_perun_model_Vo $vo
  */
+$vo = $this->data['vo'];
+$groups = $this->data['groups'];
 
 $this->data['header'] = 'Select group which fits you most';
 
@@ -14,9 +18,9 @@ $this->includeAtTemplateBase('includes/header.php');
 echo 'It will give you access to the requested service.';
 
 echo '<div class="list-group">';
-foreach ($this->data['groups'] as $group) {
-	$url = getRegisterUrl($this->data['registerUrl'], $this->data['callbackParamName'], $this->data['callbackUrl'], $this->data['vo']['shortName'], $group['name']);
-	echo "<a href='$url' class='list-group-item'><b>{$group['name']}</b> - {$group['description']}</a>";
+foreach ($groups as $group) {
+	$url = getRegisterUrl($this->data['registerUrl'], $this->data['callbackParamName'], $this->data['callbackUrl'], $vo->getShortName(), $group->getName());
+	echo "<a href='$url' class='list-group-item'><b>{$group->getName()}</b> - {$group->getDescription()}</a>";
 }
 echo '</div>';
 

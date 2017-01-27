@@ -46,38 +46,48 @@ class sspmod_perun_Auth_Process_PerunAttributes extends SimpleSAML_Auth_Processi
 	{
 		assert('is_array($request)');
 
-		if (isset($request['perun']['userId'])) {
-			$perunUid = $request['perun']['userId'];
+		if (isset($request['perun']['user'])) {
+			$user = $request['perun']['user'];
 		} else {
 			throw new SimpleSAML_Error_Exception("perun:PerunAttributes: " .
-					"missing mandatory field 'perun.userId' in request." .
+					"missing mandatory field 'perun.user' in request." .
 					"Hint: Did you configured PerunIdentity filter before this filter?"
 			);
 		}
 
 
-		$perunAttrs = $this->adapter->getUserAttributes($perunUid, array_keys($this->attrMap));
+		$attrs = $this->adapter->getUserAttributes($user, array_keys($this->attrMap));
 
 
-		foreach ($perunAttrs as $perunAttr) {
+		foreach ($attrs as $attrName => $attrValue) {
 
-			$perunAttrName = $perunAttr['namespace'] . ":" . $perunAttr['friendlyName'];
-			$sspAttr = $this->attrMap[$perunAttrName];
+			$sspAttr = $this->attrMap[$attrName];
 
-			if (is_null($perunAttr['value'])) {
+			if (is_null($attrValue)) {
 				$value = array();
-			} else if (is_array($perunAttr['value'])) {
-				$value = $perunAttr['value'];
+			} else if (is_string($attrValue)) {
+				$value = array($attrValue);
+			} else if ($this->has_string_keys($attrValue)) {
+				$value = $attrValue;
+			} else if (is_array($attrValue)) {
+				$value = $attrValue;
 			} else {
-				$value = array($perunAttr['value']);
+				throw new SimpleSAML_Error_Exception("sspmod_perun_Auth_Process_PerunAttributes - Unsupported attribute type. ".
+				"Attribute name: $attrName, Supported types: null, string, array, associative array.");
 			}
 
-			SimpleSAML_Logger::debug("perun:PerunAttributes: perun attribute $perunAttrName was fetched. " .
+			SimpleSAML_Logger::debug("perun:PerunAttributes: perun attribute $attrName was fetched. " .
 					"Value ".implode(",", $value)." is being setted to ssp attribute $sspAttr");
 
 			$request['Attributes'][$sspAttr] = $value;
 		}
 
+	}
+
+
+	private function has_string_keys($array) {
+		if (!is_array($array)) return false;
+		return count(array_filter(array_keys($array), 'is_string')) > 0;
 	}
 
 }

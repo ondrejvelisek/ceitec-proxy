@@ -10,7 +10,7 @@
  * Example Usage:
  *
  * try {
- *		$attribute = sspmod_perun_Rpc::get('attributesManager', 'getAttribute', array(
+ *		$attribute = sspmod_perun_RpcConnector::get('attributesManager', 'getAttribute', array(
  *			'user' => $userId,
  *			'attributeName' => $attrName,
  * 		));
@@ -24,9 +24,9 @@
 class sspmod_perun_RpcConnector
 {
 	const CONFIG_FILE_NAME = 'module_perun.php';
-	const PROPNAME_URL  = 'rpc_url';
-	const PROPNAME_USER = 'username';
-	const PROPNAME_PASS = 'password';
+	const PROPNAME_URL  = 'rpc.url';
+	const PROPNAME_USER = 'rpc.username';
+	const PROPNAME_PASS = 'rpc.password';
 
 
 	public static function get($manager, $method, $params = array()) {

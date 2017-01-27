@@ -16,7 +16,15 @@ class sspmod_perun_AdapterRpc extends sspmod_perun_Adapter
 				'extSourceName' => $idpEntityId,
 				'extLogin' => $uid,
 			));
-			return $user;
+
+			$name = '';
+			if (!empty($user['titleBefore'])) $name .= $user['titleBefore'].' ';
+			if (!empty($user['titleBefore'])) $name .= $user['firstName'].' ';
+			if (!empty($user['titleBefore'])) $name .= $user['middleName'].' ';
+			if (!empty($user['titleBefore'])) $name .= $user['lastName'];
+			if (!empty($user['titleBefore'])) $name .= ' '.$user['titleAfter'];
+
+			return new sspmod_perun_model_User($user['id'], $name);
 		} catch (sspmod_perun_Exception $e) {
 			if ($e->getName() === 'UserExtSourceNotExistsException') {
 				return null;
@@ -30,33 +38,30 @@ class sspmod_perun_AdapterRpc extends sspmod_perun_Adapter
 	}
 
 
-	public function getMemberGroups($perunUid, $voShortName)
+	public function getMemberGroups($user, $vo)
 	{
-		$vo = sspmod_perun_RpcConnector::get('vosManager', 'getVoByShortName', array(
-			'shortName' => $voShortName,
-		));
-
 		$member = sspmod_perun_RpcConnector::get('membersManager', 'getMemberByUser', array(
-			'vo' => $vo['id'],
-			'user' => $perunUid,
+			'vo' => $vo->getId(),
+			'user' => $user->getId(),
 		));
 
 		$memberGroups = sspmod_perun_RpcConnector::get('groupsManager', 'getAllMemberGroups', array(
 			'member' => $member['id'],
 		));
 
-		return $memberGroups;
+		$convertedGroups = array();
+		foreach ($memberGroups as $group) {
+			array_push($convertedGroups, new sspmod_perun_model_Group($group['id'], $group['name'], $group['description']));
+		}
+
+		return $convertedGroups;
 	}
 
 
-	public function getSpGroups($spEntityId, $voShortName)
+	public function getSpGroups($spEntityId, $vo)
 	{
-		$vo = sspmod_perun_RpcConnector::get('vosManager', 'getVoByShortName', array(
-			'shortName' => $voShortName,
-		));
-
 		$resources = sspmod_perun_RpcConnector::get('resourcesManager', 'getResources', array(
-			'vo' => $vo['id'],
+			'vo' => $vo->getId(),
 		));
 
 		$spFacilityIds = array();
@@ -83,52 +88,57 @@ class sspmod_perun_AdapterRpc extends sspmod_perun_Adapter
 			$groups = sspmod_perun_RpcConnector::get('resourcesManager', 'getAssignedGroups', array(
 				'resource' => $spResource['id'],
 			));
-			$spGroups = array_merge($spGroups, $groups);
+			$convertedGroups = array();
+			foreach ($groups as $group) {
+				array_push($convertedGroups, new sspmod_perun_model_Group($group['id'], $group['name'], $group['description']));
+			}
+			$spGroups = array_merge($spGroups, $convertedGroups);
 		}
 
-		$spGroups = $this->removeDuplicatesById($spGroups);
+		$spGroups = $this->removeDuplicateEntities($spGroups);
 
 		return $spGroups;
 	}
 
 
-	private function removeDuplicatesById($entities) {
-
-		$removed = array();
-		$ids = array();
-		foreach ($entities as $entity) {
-			if (!in_array($entity['id'], $ids)) {
-				array_push($ids, $entity['id']);
-				array_push($removed, $entity);
-			}
-		}
-		return $removed;
-
-	}
-
-
 	public function getGroupByName($vo, $name)
 	{
-		return sspmod_perun_RpcConnector::get('groupsManager', 'getGroupByName', array(
-			'vo' => $vo,
+		$group = sspmod_perun_RpcConnector::get('groupsManager', 'getGroupByName', array(
+			'vo' => $vo->getId(),
 			'name' => $name,
 		));
+
+		return new sspmod_perun_model_Group($group['id'], $group['name'], $group['description']);
 	}
 
 
 	public function getVoByShortName($voShortName)
 	{
-		return sspmod_perun_RpcConnector::get('vosManager', 'getVoByShortName', array(
+		$vo = sspmod_perun_RpcConnector::get('vosManager', 'getVoByShortName', array(
 			'shortName' => $voShortName,
 		));
+
+		return new sspmod_perun_model_Vo($vo['id'], $vo['name'], $vo['shortName']);
 	}
 
 
-	public function getUserAttributes($perunUid, $attrNames)
+	public function getUserAttributes($user, $attrNames)
 	{
-		return sspmod_perun_RpcConnector::get('attributesManager', 'getAttributes', array(
-			'user' => $perunUid,
+		$perunAttrs = sspmod_perun_RpcConnector::get('attributesManager', 'getAttributes', array(
+			'user' => $user->getId(),
 			'attrNames' => $attrNames,
 		));
+
+		$attributes = array();
+		foreach ($perunAttrs as $perunAttr) {
+
+			$perunAttrName = $perunAttr['namespace'] . ":" . $perunAttr['friendlyName'];
+
+			$attributes[$perunAttrName] = $perunAttr['value'];
+		}
+
+		return $attributes;
 	}
+
+
 }

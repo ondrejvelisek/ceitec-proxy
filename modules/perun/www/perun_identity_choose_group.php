@@ -17,7 +17,7 @@ $vo = $adapter->getVoByShortName($_REQUEST[sspmod_perun_Auth_Process_PerunIdenti
 
 $groups = array();
 foreach ($_REQUEST['groupNames'] as $groupName) {
-	array_push($groups, $adapter->getGroupByName($vo['id'], $groupName));
+	array_push($groups, $adapter->getGroupByName($vo, $groupName));
 }
 
 
