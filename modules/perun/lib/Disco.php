@@ -70,7 +70,7 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 	 */
 	protected function filterList($list)
 	{
-		SimpleSAML_Logger::debug('perun.Disco.filterList: Idps loaded from metadata: ' . var_export(array_keys($list), true));
+		//SimpleSAML_Logger::debug('perun.Disco.filterList: Idps loaded from metadata: ' . var_export(array_keys($list), true));
 
 		if (!isset($this->originalsp['disco.doNotFilterIdps']) || !$this->originalsp['disco.doNotFilterIdps']) {
 
@@ -97,7 +97,7 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 				}
 			}
 		}
-		SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after SAML2 Scoping: ' . var_export(array_keys($list), true));
+		//SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after SAML2 Scoping: ' . var_export(array_keys($list), true));
 		return $list;
 	}
 
@@ -119,7 +119,7 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 				}
 			}
 		}
-		SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Whitelisting: ' . var_export(array_keys($list), true));
+		//SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Whitelisting: ' . var_export(array_keys($list), true));
 		return $list;
 	}
 
@@ -140,7 +140,7 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 				unset($list[$entityId]);
 			}
 		}
-		SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Greylisting: ' . var_export(array_keys($list), true));
+		//SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Greylisting: ' . var_export(array_keys($list), true));
 		return $list;
 	}
 

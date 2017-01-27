@@ -114,7 +114,7 @@ function searchScript() {
  */
 function showEntry($t, $metadata, $favourite = false) {
 
-	if (in_array('social', $metadata['tags'])) {
+	if (isset($metadata['tags']) && in_array('social', $metadata['tags'])) {
 		return showEntrySocial($t, $metadata);
 	}
 

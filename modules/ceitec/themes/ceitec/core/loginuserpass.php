@@ -58,6 +58,7 @@ if ($this->data['errorcode'] !== null) {
 			<label for="password" class="col-sm-2 control-label"><?php echo $this->t('{login:password}'); ?></label>
 			<div class="col-sm-10">
 				<input id="password" type="password" tabindex="2" name="password" class="form-control"/>
+				<p class="help-block">You can change or recover your password <a href="https://pwd.ceitec.cz/">here</a>.</p>
 			</div>
 		</div>
 
