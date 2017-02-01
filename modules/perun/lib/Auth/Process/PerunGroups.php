@@ -3,8 +3,9 @@
 /**
  * Class sspmod_perun_Auth_Process_PerunGroups
  *
- * This filter simply extracts group names from cached groups from PerunIdentity filter and save them into attribute.
+ * This filter extracts group names from cached groups from PerunIdentity filter and save them into attribute.
  * It means it strongly relays on it.
+ * It also translates (renames) given name of group based on associative array 'groupMapping' in SP metadata.
  *
  * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */
@@ -42,7 +43,25 @@ class sspmod_perun_Auth_Process_PerunGroups extends SimpleSAML_Auth_ProcessingFi
 
 		$request['Attributes'][$this->attrName] = array();
 		foreach ($groups as $group) {
-			array_push($request['Attributes'][$this->attrName], $group->getName());
+			$groupName = $this->mapGroupName($request, $group->getName());
+			array_push($request['Attributes'][$this->attrName], $groupName);
+		}
+	}
+
+	/**
+	 * This method translates given name of group based on associative array 'groupMapping' in SP metadata.
+	 * @param $request
+	 * @param string $groupName
+	 * @return string translated group name
+	 */
+	protected function mapGroupName($request, $groupName) {
+		if (isset($request["SPMetadata"]["groupMapping"]) && isset($request["SPMetadata"]["groupMapping"][$groupName])) {
+			SimpleSAML_Logger::debug("Mapping $groupName to " . $request["SPMetadata"]["groupMapping"][$groupName] . " for SP " . $request["SPMetadata"]["entityid"]);
+			return $request["SPMetadata"]["groupMapping"][$groupName];
+		} else {
+			# No mapping defined
+			SimpleSAML_Logger::debug("No mapping found for group $groupName for SP " . $request["SPMetadata"]["entityid"]);
+			return $groupName;
 		}
 	}
 
