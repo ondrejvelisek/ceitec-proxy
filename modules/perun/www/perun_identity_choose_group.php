@@ -24,7 +24,7 @@ foreach ($_REQUEST['groupNames'] as $groupName) {
 $config = SimpleSAML_Configuration::getInstance();
 
 $t = new SimpleSAML_XHTML_Template($config, 'perun:choose-group-tpl.php');
-$t->data['registerUrl'] = $_REQUEST[sspmod_perun_Auth_Process_PerunIdentity::VO_SHORTNAME];
+$t->data['registerUrl'] = $_REQUEST[sspmod_perun_Auth_Process_PerunIdentity::REGISTER_URL];
 $t->data['callbackParamName'] = $_REQUEST[sspmod_perun_Auth_Process_PerunIdentity::CALLBACK_PARAM_NAME];
 $t->data['callbackUrl'] = $_REQUEST['callbackUrl'];
 $t->data['vo'] = $vo;
