@@ -3,6 +3,8 @@ log
 config
 metadata
 cert
+data
+stats
 
 !config/.gitkeep
 !metadata/.gitkeep
