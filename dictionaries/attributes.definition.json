@@ -48,7 +48,7 @@
 		"en": "Persistent pseudonymous ID"
 	},
 	"attribute_edupersonprincipalname": {
-		"en": "Person's principal name at home organization"
+		"en": "Person's ID"
 	},
 	"attribute_o": {
 		"en": "Organization name"
@@ -139,5 +139,8 @@
 	},
 	"attribute_schacuserprivateattribute": {
 		"en": "Private information elements"
+	},
+	"attribute_edupersonuniqueid": {
+		"en": "Persistent ID"
 	}
 }

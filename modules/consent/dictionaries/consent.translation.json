@@ -498,7 +498,7 @@
 		"fi": "Tiedot l\u00e4hetet\u00e4\u00e4n palvelulle SPNAME",
 		"pt": "Informa\u00e7\u00e3o que ir\u00e1 ser enviada para SPNAME",
 		"pl": "Atrybuty, kt\u00f3re zostan\u0105 przes\u0142ane do serwisu",
-		"cs": "Atributy, kter\u00e9 mohou b\u00fdt zasl\u00e1ny slu\u017eb\u011b",
+		"cs": "Atributy, kter\u00e9 mohou b\u00fdt zasl\u00e1ny slu\u017eb\u011b SPNAME",
 		"tr": "SPNAME'e g\u00f6nderilecek bilgiler",
 		"fr": "Informations qui seront envoy\u00e9es \u00e0 SPNAME",
 		"it": "Informazioni che saranno inviate a SPNAME",

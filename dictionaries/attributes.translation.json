@@ -238,7 +238,7 @@
 		"pt-br": "E-mail",
 		"pt": "E-mail",
 		"pl": "E-mail",
-		"cs": "Email",
+		"cs": "E-mail",
 		"eu": "Posta",
 		"tr": "Posta",
 		"it": "Mail",
@@ -385,7 +385,7 @@
 		"pt-br": "Nome de dom\u00ednio da organiza\u00e7\u00e3o principal",
 		"pt": "Nome de dom\u00ednio da Organiza\u00e7\u00e3o de origem",
 		"pl": "Nazwa organizacji macierzystej",
-		"cs": "Jm\u00e9no organizace",
+		"cs": "Identifikace organizace",
 		"tr": "Ana kurulu\u015f alan ad\u0131",
 		"it": "Nome del dominio della propria organizzazione",
 		"lt": "Organizacijos domenas",
@@ -459,7 +459,7 @@
 		"pt-br": "Titularidade sobre o servi\u00e7o",
 		"pt": "Direitos oferecidos pela organiza\u00e7\u00e3o de origem",
 		"pl": "Uprawnienie dotycz\u0105ce serwisu",
-		"cs": "Pr\u00e1vo ke slu\u017eb\u011b",
+		"cs": "Opr\u00e1vn\u011bn\u00ed ke slu\u017eb\u011b",
 		"tr": "Servise g\u00f6re yetki",
 		"it": "Qualifica rispetto al servizio",
 		"lt": "Teis\u0117s susij\u0119 su paslauga",
@@ -531,7 +531,7 @@
 		"fi": "Pseudonyymi-identiteetti",
 		"pt-br": "Apelido persistente ID",
 		"pt": "Identifica\u00e7\u00e3o persistente tipo pseud\u00f3nimo",
-		"cs": "Perzistent\u00ed pseudoanonymn\u00ed ID",
+		"cs": "Perzistentn\u00ed pseudoanonymn\u00ed ID",
 		"tr": "Kal\u0131c\u0131 takma ad\u0131 ID",
 		"it": "Pseudonimo identificativo persistente",
 		"lt": "Nuolatinio pseudonimo ID",
@@ -568,7 +568,7 @@
 		"fi": "Henkil\u00f6n universaali nimi",
 		"pt-br": "Diretor da organiza\u00e7\u00e3o principal",
 		"pt": "Nome de utilizador na organiza\u00e7\u00e3o de origem",
-		"cs": "Jm\u00e9no nad\u0159\u00edzen\u00e9ho",
+		"cs": "ID v organizaci",
 		"tr": "Ki\u015finin ba\u011fl\u0131 oldu\u011fu kurulu\u015ftaki as\u0131l ad\u0131",
 		"it": "Nome identificativo (principal name) nella propria organizzazione",
 		"lt": "Asmens pagrindinis vardas organizacijoje",
@@ -676,7 +676,7 @@
 		"pt-br": "Nome a ser mostrado",
 		"pt": "Nome de apresenta\u00e7\u00e3o",
 		"pl": "Nazwa wy\u015bwietlana (Display name)",
-		"cs": "Jm\u00e9no k zobrazen\u00ed",
+		"cs": "Jm\u00e9no",
 		"tr": "G\u00f6r\u00fcnt\u00fclenen isim",
 		"fr": "Nom pour affichage",
 		"it": "Nome da visualizzare",
@@ -1659,5 +1659,8 @@
 		"nl": "Groepslidmaatschap",
 		"da": "Gruppemedlemsskab",
 		"af": "Groeplidmaatskap"
+	},
+	"attribute_edupersonuniqueid": {
+		"cs": "Persistentn\u00ed ID"
 	}
 }

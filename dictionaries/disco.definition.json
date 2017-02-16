@@ -1,6 +1,6 @@
 {
 	"selectidp": {
-		"en": "Select your identity provider"
+		"en": "Log in using ..."
 	},
 	"selectidp_full": {
 		"en": "Please select the identity provider where you want to authenticate:"

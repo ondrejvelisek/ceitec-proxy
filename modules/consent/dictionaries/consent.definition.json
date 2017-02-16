@@ -1,12 +1,12 @@
 {
 	"yes": {
-		"en": "Yes, continue"
+		"en": "Continue"
 	},
 	"no": {
-		"en": "No, cancel"
+		"en": "Abort"
 	},
 	"remember": {
-		"en": "Remember"
+		"en": "Do not ask me again"
 	},
 	"consent_accept": {
 		"en": "SPNAME requires that the information below is transferred."
@@ -39,7 +39,7 @@
 		"en": "Return to consent page"
 	},
 	"consent_header": {
-		"en": "Consent about releasing personal information"
+		"en": "Information on release of personal data"
 	},
 	"consent_attributes_header": {
 		"en": "Information that will be sent to SPNAME"
