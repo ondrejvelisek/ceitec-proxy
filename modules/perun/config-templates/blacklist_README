@@ -1,5 +1,0 @@
-Blacklisting of IdPs in discovery service is consider as NOT SECURE.
-Because of it it is not (and won't be) implemented.
-Proper way is to remove (comment) IdP metadata.
-In case of automatic metadata management with metarefresh module use its blacklisting features
-Config file 'config-metarefresh.php' contains property 'blacklist'. Use it.

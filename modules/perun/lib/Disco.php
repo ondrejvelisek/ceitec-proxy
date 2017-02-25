@@ -87,7 +87,11 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 		return $list;
 	}
 
-
+	/**
+	 * Filter out IdP which are not in SAML2 Scoping attribute list (SAML2 feature)
+	 * @param $list
+	 * @return array of idps
+	 */
 	protected function scoping($list)
 	{
 		if (!empty($this->scopedIDPList)) {
@@ -104,19 +108,30 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 
 	protected function whitelisting($list)
 	{
-		$whitetable = $this->readTableFromFile('whitelist', array(0 => 'date', 1 => 'entityId'));
-		if ($whitetable !== null) {
-			$whitelist = isset($whitelist) ? $whitelist : array();
-			foreach ($whitetable as $row) {
-				array_push($whitelist, $row['entityId']);
+		$service = new sspmod_perun_IdpListsServiceCsv();
+		foreach ($list as $entityId => $idp) {
+			$unset = true;
+			if ($service->isWhitelisted($entityId)) {
+				$unset = false;
 			}
-		}
-
-		if (isset($whitelist)) {
-			foreach ($list as $entityId => $idp) {
-				if (!in_array($entityId, $whitelist)) {
-					unset($list[$entityId]);
+			if (isset($idp['EntityAttributes']['http://macedir.org/entity-category-support'])) {
+				$entityCategorySupport = $idp['EntityAttributes']['http://macedir.org/entity-category-support'];
+				if (in_array("http://refeds.org/category/research-and-scholarship", $entityCategorySupport)) {
+					$unset = false;
+				} if (!in_array("http://www.geant.net/uri/dataprotection-code-of-conduct/v1", $entityCategorySupport)) {
+					$unset = false;
 				}
+			}
+			if (isset($idp['CoCo']) and $idp['CoCo'] === true) {
+				$unset = false;
+			}
+			if (isset($idp['RaS']) and $idp['RaS'] === true) {
+				$unset = false;
+			}
+
+
+			if ($unset === true) {
+				unset($list[$entityId]);
 			}
 		}
 		//SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Whitelisting: ' . var_export(array_keys($list), true));
@@ -126,20 +141,13 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 
 	protected function greylisting($list)
 	{
-		$greytable = $this->readTableFromFile('greylist', array(0 => 'date', 1 => 'entityId'));
-		if ($greytable !== null) {
-			$greylist = isset($greylist) ? $greylist : array();
-			foreach ($greytable as $row) {
-				array_push($greylist, $row['entityId']);
-			}
-		}
-
-
-		if (isset($greylist)) {
-			foreach ($greylist as $entityId) {
+		$service = new sspmod_perun_IdpListsServiceCsv();
+		foreach ($list as $entityId => $idp) {
+			if ($service->isGreylisted($entityId)) {
 				unset($list[$entityId]);
 			}
 		}
+
 		//SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Greylisting: ' . var_export(array_keys($list), true));
 		return $list;
 	}
@@ -161,59 +169,6 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 
 		return $url;
 	}
-
-
-	/**
-	 * get list of associative arrays based on given file. It ignores commented lines with # or //.
-	 *
-	 * @param string $filepath relative to config directory or absolute path.
-	 * @param array $colMap associative array
-	 * @return array of arrays.
-	 */
-	private function readTableFromFile($filepath, $colMap = null) {
-
-		if (substr($filepath, 0, 1) !== '/') {
-			$filepath = SimpleSAML\Utils\Config::getConfigDir() . '/' . $filepath;
-		}
-
-		$table = array();
-
-		if (!file_exists($filepath)) {
-			return null;
-		}
-
-		$lines = file($filepath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-		if ($lines === false) {
-			throw new SimpleSAML_Error_Exception('Error while opening file: ' . $filepath);
-		}
-
-
-		foreach ($lines as $line) {
-			$line = trim($line);
-
-			// ignore commented lines
-			if (substr($line, 0, 1) === '#' || substr($line, 0, 2) === '//') {
-				continue;
-			}
-
-			$rawRow = preg_split('/\s+/', $line);
-
-
-			if (is_null($colMap)) {
-				$row = $rawRow;
-			} else {
-				foreach ($colMap as $colId => $colName) {
-					$row[$colName] = $rawRow[$colId];
-				}
-			}
-
-			array_push($table, $row);
-		}
-
-		return $table;
-
-	}
-
 
 
 }
