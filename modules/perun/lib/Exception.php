@@ -3,7 +3,7 @@
 /**
  * Wrapper of Perun exception returned from RPC.
  *
- * It extends SimpleSAML_Error_Exception because user we want that user can report it.
+ * It extends SimpleSAML_Error_Exception because SSP catches it and let user report it.
  *
  * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */

@@ -53,7 +53,7 @@ class sspmod_perun_RpcConnector
 
 		$result = json_decode($json, true);
 
-		if (is_null($result)) {
+		if (json_last_error() !== JSON_ERROR_NONE) {
 			throw new SimpleSAML_Error_Exception("Cant't decode response from Perun. Call: $uri, Params: $paramsQuery, Response: $json");
 		}
 		if (isset($result['errorId'])) {
@@ -79,7 +79,6 @@ class sspmod_perun_RpcConnector
 		curl_setopt($ch, CURLOPT_USERPWD, $user . ":" . $pass);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $paramsJson);
-		curl_setopt($ch, CURLOPT_HEADER, true);
 		curl_setopt($ch, CURLOPT_HTTPHEADER,
 			array('Content-Type:application/json',
 				'Content-Length: ' . strlen($paramsJson))
@@ -93,7 +92,9 @@ class sspmod_perun_RpcConnector
 
 		$result = json_decode($json, true);
 
-		if (is_null($result)) {
+
+
+		if (json_last_error() !== JSON_ERROR_NONE) {
 			throw new SimpleSAML_Error_Exception("Cant't decode response from Perun. Call: $uri, Params: $paramsJson, Response: $json");
 		}
 		if (isset($result['errorId'])) {
