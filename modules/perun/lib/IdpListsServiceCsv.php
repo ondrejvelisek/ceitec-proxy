@@ -22,11 +22,6 @@ class sspmod_perun_IdpListsServiceCsv implements sspmod_perun_IdpListsService
 	}
 
 
-	function getWhitelist()
-	{
-		// TODO: Implement getWhitelist() method.
-	}
-
 	function getLatestWhitelist()
 	{
 		if (!file_exists($this->whitelistFile)) {
@@ -57,11 +52,6 @@ class sspmod_perun_IdpListsServiceCsv implements sspmod_perun_IdpListsService
 		return array_values($latest);
 	}
 
-	function getWhitelistForIdp($entityID)
-	{
-		// TODO: Implement getWhitelistForIdp() method.
-	}
-
 	function isWhitelisted($entityID)
 	{
 		if (!file_exists($this->whitelistFile)) {
@@ -86,21 +76,6 @@ class sspmod_perun_IdpListsServiceCsv implements sspmod_perun_IdpListsService
 		}
 		fclose($f);
 		return $result;
-	}
-
-	function addIdpToWhitelist($entityID, $reason = null)
-	{
-		// TODO: Implement addIdpToWhitelist() method.
-	}
-
-	function removeIdpFromWhitelist($entityID)
-	{
-		// TODO: Implement removeIdpFromWhitelist() method.
-	}
-
-	function getGreylist()
-	{
-		// TODO: Implement getGreylist() method.
 	}
 
 	function getLatestGreylist()
@@ -133,11 +108,6 @@ class sspmod_perun_IdpListsServiceCsv implements sspmod_perun_IdpListsService
 		return array_values($latest);
 	}
 
-	function getGreylistForIdp($entityID)
-	{
-		// TODO: Implement getGreylistForIdp() method.
-	}
-
 	function isGreylisted($entityID)
 	{
 		if (!file_exists($this->greylistFile)) {
@@ -162,16 +132,6 @@ class sspmod_perun_IdpListsServiceCsv implements sspmod_perun_IdpListsService
 		}
 		fclose($f);
 		return $result;
-	}
-
-	function addIdpToGreylist($entityID, $reason = null)
-	{
-		// TODO: Implement addIdpToGreylist() method.
-	}
-
-	function removeIdpFromGreylist($entityID)
-	{
-		// TODO: Implement removeIdpFromGreylist() method.
 	}
 
 	function whitelistIdp($entityID, $reason = null)
