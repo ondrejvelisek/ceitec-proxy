@@ -28,7 +28,7 @@ class sspmod_perun_DiscoTemplate extends SimpleSAML_XHTML_Template
 	 * @return array metadata of preferred IdP if exists or null if not
 	 */
 	public function getPreferredIdp() {
-		if (!empty($this->data['preferredidp'])) {
+		if (isset($this->data['preferredidp']) && !empty($this->data['preferredidp'])) {
 			return $this->getAllIdps()[$this->data['preferredidp']];
 		}
 		return null;

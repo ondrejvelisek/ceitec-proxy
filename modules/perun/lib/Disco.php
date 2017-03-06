@@ -14,6 +14,9 @@
  */
 class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 {
+	const CONFIG_FILE_NAME = 'module_perun.php';
+	const PROPNAME_DISABLE_WHITELISTING = 'disco.disableWhitelisting';
+
 	private $originalsp;
 
 	public function __construct(array $metadataSets, $instance)
@@ -70,13 +73,16 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 	 */
 	protected function filterList($list)
 	{
-		//SimpleSAML_Logger::debug('perun.Disco.filterList: Idps loaded from metadata: ' . var_export(array_keys($list), true));
+		$conf = SimpleSAML_Configuration::getConfig(self::CONFIG_FILE_NAME);
+		$disableWhitelisting = $conf->getBoolean(self::PROPNAME_DISABLE_WHITELISTING, false);
 
 		if (!isset($this->originalsp['disco.doNotFilterIdps']) || !$this->originalsp['disco.doNotFilterIdps']) {
 
 			$list = parent::filterList($list);
 			$list = $this->scoping($list);
-			$list = $this->whitelisting($list);
+			if (!$disableWhitelisting) {
+				$list = $this->whitelisting($list);
+			}
 			$list = $this->greylisting($list);
 			$list = $this->greylistingPerSP($list, $this->originalsp);
 		}

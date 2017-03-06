@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This is example configuration of SimpleSAMLphp Perun interface.
+ * This is example configuration of SimpleSAMLphp Perun interface and additional features.
  * Copy this file to default config directory and edit the properties.
  *
  * copy command (from SimpleSAML base dir)
@@ -30,5 +30,11 @@ $config = array(
 	 */
 	//'ldap.username' => '_proxy-idp',
 	//'ldap.password' => 'S-Perunem-na-vecne-casy-a-nikdy-jinak!'
+
+	/**
+	 * specify if disco module should filter out IdPs which are not whitelisted neither commited to CoCo or RaS.
+	 * default is false.
+	 */
+	//'disco.disableWhitelisting' => true,
 
 );
