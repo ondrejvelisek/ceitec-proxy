@@ -125,7 +125,8 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 				$entityCategorySupport = $idp['EntityAttributes']['http://macedir.org/entity-category-support'];
 				if (in_array("http://refeds.org/category/research-and-scholarship", $entityCategorySupport)) {
 					$unset = false;
-				} if (!in_array("http://www.geant.net/uri/dataprotection-code-of-conduct/v1", $entityCategorySupport)) {
+				}
+				if (in_array("http://www.geant.net/uri/dataprotection-code-of-conduct/v1", $entityCategorySupport)) {
 					$unset = false;
 				}
 			}
