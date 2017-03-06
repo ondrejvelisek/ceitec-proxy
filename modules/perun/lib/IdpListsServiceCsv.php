@@ -33,7 +33,7 @@ class sspmod_perun_IdpListsServiceCsv implements sspmod_perun_IdpListsService
 
 			$latest = array();
 			while (($idp = $this->arrayToIdp(fgetcsv($f))) !== false) {
-				if (isset($latest[$idp['entityid']])) {
+				if (!isset($latest[$idp['entityid']])) {
 					$latest[$idp['entityid']] = $idp;
 				} else {
 					if ($idp['timestamp'] > $latest[$idp['entityid']]['timestamp']) {
