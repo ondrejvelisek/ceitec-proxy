@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * endpoint which report (send email) given idp defined by idpEntityId param.
+ * Also consumes other parameters such as 'isOk'
+ * After successfull report it redirects user back to URL defined in 'redirectUri'
+ *
+ * Request has to be POST
+ *
+ * example URL (params are POST):
+ * https://login.example.org/proxy/module.php/perun/protected/reportIdp.php
+ *
+ * @author Ondrej Velisek <ondrejvelisek@gmail.com>
+ */
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 	echo 'ERROR request has to be POST';
 	die;

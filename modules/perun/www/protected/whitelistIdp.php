@@ -1,6 +1,12 @@
 <?php
 
 /**
+ * endpoint which whitelist given idp defined by entityID param.
+ * Optionally consumes and saves reason param.
+ *
+ * example call:
+ * https://login.example.org/proxy/module.php/perun/protected/whitelistIdp.php?entityId=hey&reason=Attribute%20check%20by%20user
+ *
  * @author Ondrej Velisek <ondrejvelisek@gmail.com>
  */
 
