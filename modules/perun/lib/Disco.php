@@ -78,6 +78,7 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 			$list = $this->scoping($list);
 			$list = $this->whitelisting($list);
 			$list = $this->greylisting($list);
+			$list = $this->greylistingPerSP($list, $this->originalsp);
 		}
 
 		if (empty($list)) {
@@ -149,6 +150,19 @@ class sspmod_perun_Disco extends sspmod_discopower_PowerIdPDisco
 		}
 
 		//SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Greylisting: ' . var_export(array_keys($list), true));
+		return $list;
+	}
+
+
+	protected function greylistingPerSP($list, $sp)
+	{
+		foreach ($list as $entityId => $idp) {
+			if (isset($sp['greylist']) && in_array($entityId, $sp['greylist'])) {
+				unset($list[$entityId]);
+			}
+		}
+
+		//SimpleSAML_Logger::debug('perun.Disco.filterList: Idps after Greylisting per SP: ' . var_export(array_keys($list), true));
 		return $list;
 	}
 
