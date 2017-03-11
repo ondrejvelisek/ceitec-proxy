@@ -1,0 +1,17 @@
+{
+  "name": "rgeyer/simplesamlphp-authgoogleoauth2",
+  "description": "A SimpleSAMLPHP module which allows authentication against Google OAuth2",
+  "type": "simplesamlphp-module",
+  "keywords": ["google","oauth2","simplesamlphp"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ryan J. Geyer",
+      "email": "me@ryangeyer.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "google/apiclient": "1.1.2"
+  }
+}
