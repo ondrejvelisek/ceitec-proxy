@@ -18,8 +18,8 @@ if(!empty($this->data['htmlinject']['htmlContentPost'])) {
 	
 	<div style="float: left;">
 		<p>CEITEC, Masaryk University, Žerotínovo nám. 9, 601 77 Brno, Czech Republic
-			&nbsp; &nbsp; +420 549 497 124 &nbsp;
-			<a href="mailto:info@ceitec.cz">info@ceitec.cz</a>
+			&nbsp; &nbsp; +420 549 498 732 &nbsp;
+			<a href="mailto:is.ceitec@ceitec.cz">is.ceitec@ceitec.cz</a>
 		</p>
 		<p>Copyright © CEITEC 2017
 		</p>
