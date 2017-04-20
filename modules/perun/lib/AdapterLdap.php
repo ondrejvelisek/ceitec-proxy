@@ -123,4 +123,11 @@ class sspmod_perun_AdapterLdap extends sspmod_perun_Adapter
 		return $attributes;
 	}
 
+
+	public function getUserExtSource($extSourceName, $userExtSourceLogin)
+	{
+		// TODO
+		throw new SimpleSAML_Error_Exception("Not implemented yet. Hint1: Feel free to implement me. Hint2: Use AdapterRPC instead.");
+	}
+
 }

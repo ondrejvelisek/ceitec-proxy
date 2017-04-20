@@ -2,7 +2,7 @@
 
 /**
  * Interface sspmod_perun_Adapter
- * specify interface to get information from Perun.
+ * Define interface to get data from Perun.
  */
 abstract class sspmod_perun_Adapter
 {
@@ -68,6 +68,14 @@ abstract class sspmod_perun_Adapter
 	 * and values are attr values (can be null, string, array, associative array)
 	 */
 	public abstract function getUserAttributes($user, $attrNames);
+
+	/**
+	 * @param string $extSourceName
+	 * @param string $userExtSourceLogin
+	 * @return sspmod_perun_model_UserExtSource by ExtSource name and UserExtSource login
+	 */
+	public abstract function getUserExtSource($extSourceName, $userExtSourceLogin);
+
 
 
 	/**

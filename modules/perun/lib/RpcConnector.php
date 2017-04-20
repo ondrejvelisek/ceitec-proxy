@@ -4,7 +4,7 @@
  * Provides interface to call Perun RPC.
  * Configuration file 'module_perun.php' should be placed in default config folder of SimpleSAMLphp.
  * Example of file is in config-template folder.
- * Note that Perun RPC should be considered as unreliable
+ * Note that Perun RPC should be considered as unreliable and methods throws SimpleSAML_Error_Exception if Perun is inaccessible.
  * and authentication process should continue without connection to Perun. e.g. use LDAP instead.
  *
  * Example Usage:
@@ -47,6 +47,11 @@ class sspmod_perun_RpcConnector
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 		$json = curl_exec($ch);
+
+		if ($json === false) {
+			throw new SimpleSAML_Error_Exception("Cant't contact Perun. Call: $uri, Params: $paramsJson, Error: ".curl_error($ch));
+		}
+
 		curl_close($ch);
 
 		SimpleSAML_Logger::debug("perun.RPC: GET call $uri with params: " . $paramsQuery . ", response: " . $json);
@@ -86,6 +91,11 @@ class sspmod_perun_RpcConnector
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 		$json = curl_exec($ch);
+
+		if ($json === false) {
+			throw new SimpleSAML_Error_Exception("Cant't contact Perun. Call: $uri, Params: $paramsJson, Error: ".curl_error($ch));
+		}
+
 		curl_close($ch);
 
 		SimpleSAML_Logger::debug("perun.RPC: POST call $uri with params: " . $paramsJson . ", response: " . $json);

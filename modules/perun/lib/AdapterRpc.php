@@ -141,4 +141,57 @@ class sspmod_perun_AdapterRpc extends sspmod_perun_Adapter
 	}
 
 
+	public function getUserExtSource($extSourceName, $userExtSourceLogin)
+	{
+		$extSource = sspmod_perun_RpcConnector::get("extSourcesManager", "getExtSourceByName", array(
+			"name" => $extSourceName
+		));
+
+		// ::post because it cannot parsed correctly JSON object to URL params correctly
+		$ues = sspmod_perun_RpcConnector::post("usersManager", "getUserExtSourceByExtLogin", array(
+			"extSource" => $extSource,
+			"extSourceLogin" => $userExtSourceLogin
+		));
+
+		return new sspmod_perun_model_UserExtSource($ues['id'], $ues['login'], $ues['userId'], $ues['loa']);
+	}
+
+
+	/**
+	 * Updates last access property of given UES. Last access property defines when user authenticates using this UES.
+	 * @param sspmod_perun_model_UserExtSource $userExtSource
+	 * @return void
+	 * @throws SimpleSAML_Error_Exception if Perun is inaccessible (Not only, such exception can be thrown with different causes)
+	 */
+	public function updateUserExtSourceLastAccess($userExtSource)
+	{
+		sspmod_perun_RpcConnector::post("usersManager", "updateUserExtSourceLastAccess", array(
+			"userExtSource" => $userExtSource->getId()
+		));
+	}
+
+
+	/**
+	 * Set user external source attribute to Perun.
+	 * @param sspmod_perun_model_UserExtSource $userExtSource
+	 * @param string $attrName
+	 * @param array $attrValue new value of attribute
+	 * @return void
+	 * @throws SimpleSAML_Error_Exception if Perun is inaccessible (Not only, such exception can be thrown with different causes)
+	 */
+	public function setUserExtSourceAttribute($userExtSource, $attrName, $attrValue)
+	{
+		$attribute = sspmod_perun_RpcConnector::get("attributesManager", "getAttribute", array(
+			"userExtSource" => $userExtSource->getId(),
+			"attributeName" => $attrName
+		));
+
+		$attribute['value'] = $attrValue;
+
+		sspmod_perun_RpcConnector::post("attributesManager", "setAttribute", array(
+			"userExtSource" => $userExtSource->getId(),
+			"attribute" => $attribute
+		));
+	}
+
 }
